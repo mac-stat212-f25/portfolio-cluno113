@@ -1,0 +1,19 @@
+{
+  "hash": "19cca43fd39c398e9cf17ccea8c9f746",
+  "result": {
+    "engine": "knitr",
+    "markdown": "# Welcome {.unnumbered}\n\nWelcome to my online portfolio for COMP/STAT112 course taken at [Macalester College](https://www.macalester.edu/).  Please, use the side bar on the left for navigation.\n\n\n\n\n::: {.cell}\n\n:::\n\n::: {.cell}\n\n:::\n\n::: {.cell}\n\n:::\n\n::: {.cell}\n\n:::\n\n::: {.cell}\n::: {.cell-output-display}\n\n```{=html}\n<div class=\"wordcloud2 html-widget html-fill-item\" id=\"htmlwidget-d442214d621ec945352c\" style=\"width:100%;height:464px;\"></div>\n<script type=\"application/json\" data-for=\"htmlwidget-d442214d621ec945352c\">{\"x\":{\"word\":[\"welcome\",\"to\",\"comp\",\"stat\",\"212\",\"mac\",\"st paul\"],\"freq\":[10,2,8,8,8,6,6],\"fontFamily\":\"Segoe UI\",\"fontWeight\":\"bold\",\"color\":\"random-dark\",\"minSize\":0,\"weightFactor\":18,\"backgroundColor\":\"white\",\"gridSize\":0,\"minRotation\":-0.7853981633974483,\"maxRotation\":0.7853981633974483,\"shuffle\":true,\"rotateRatio\":0.4,\"shape\":\"cardioid\",\"ellipticity\":0.65,\"figBase64\":null,\"hover\":null},\"evals\":[],\"jsHooks\":{\"render\":[{\"code\":\"function(el,x){\\n                        console.log(123);\\n                        if(!iii){\\n                          window.location.reload();\\n                          iii = False;\\n\\n                        }\\n  }\",\"data\":null}]}}</script>\n```\n\n:::\n:::\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {
+      "include-in-header": [
+        "<link href=\"site_libs/htmltools-fill-0.5.8.1/fill.css\" rel=\"stylesheet\" />\n<script src=\"site_libs/htmlwidgets-1.6.4/htmlwidgets.js\"></script>\n<link href=\"site_libs/wordcloud2-0.0.1/wordcloud.css\" rel=\"stylesheet\" />\n<script src=\"site_libs/wordcloud2-0.0.1/wordcloud2-all.js\"></script>\n<script src=\"site_libs/wordcloud2-0.0.1/hover.js\"></script>\n<script src=\"site_libs/wordcloud2-binding-0.2.1/wordcloud2.js\"></script>\n"
+      ]
+    },
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

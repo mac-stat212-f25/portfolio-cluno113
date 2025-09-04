@@ -1,0 +1,111 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "COMP/STAT212 Portfolio",
+    "section": "",
+    "text": "Welcome\nWelcome to my online portfolio for COMP/STAT112 course taken at Macalester College. Please, use the side bar on the left for navigation.",
+    "crumbs": [
+      "Welcome"
+    ]
+  },
+  {
+    "objectID": "src/pv/pv-01.html",
+    "href": "src/pv/pv-01.html",
+    "title": "Professional Viz Sample",
+    "section": "",
+    "text": "Add content here",
+    "crumbs": [
+      "Prof Viz",
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Professional Viz Sample</span>"
+    ]
+  },
+  {
+    "objectID": "src/tt/2025-07-08.html",
+    "href": "src/tt/2025-07-08.html",
+    "title": "TidyTuesday Sample 1",
+    "section": "",
+    "text": "Add content here",
+    "crumbs": [
+      "TidyTuesday",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>TidyTuesday Sample 1</span>"
+    ]
+  },
+  {
+    "objectID": "src/tt/2025-07-15.html",
+    "href": "src/tt/2025-07-15.html",
+    "title": "TidyTuesday Sample 2",
+    "section": "",
+    "text": "Add content here",
+    "crumbs": [
+      "TidyTuesday",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>TidyTuesday Sample 2</span>"
+    ]
+  },
+  {
+    "objectID": "src/ica/ica-sample1.html",
+    "href": "src/ica/ica-sample1.html",
+    "title": "ICA Sample 1",
+    "section": "",
+    "text": "Add content here",
+    "crumbs": [
+      "In-Class Activities",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>ICA Sample 1</span>"
+    ]
+  },
+  {
+    "objectID": "src/ica/ica-sample2.html",
+    "href": "src/ica/ica-sample2.html",
+    "title": "ICA Sample 2",
+    "section": "",
+    "text": "Add content here",
+    "crumbs": [
+      "In-Class Activities",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>ICA Sample 2</span>"
+    ]
+  },
+  {
+    "objectID": "src/appx/appx-sample1.html",
+    "href": "src/appx/appx-sample1.html",
+    "title": "Appendix A — Appendix Sample 1",
+    "section": "",
+    "text": "Add content here",
+    "crumbs": [
+      "Appendices",
+      "<span class='chapter-number'>A</span>  <span class='chapter-title'>Appendix Sample 1</span>"
+    ]
+  },
+  {
+    "objectID": "src/appx/appx-sample2.html",
+    "href": "src/appx/appx-sample2.html",
+    "title": "Appendix B — Appendix Sample 2",
+    "section": "",
+    "text": "Add content here",
+    "crumbs": [
+      "Appendices",
+      "<span class='chapter-number'>B</span>  <span class='chapter-title'>Appendix Sample 2</span>"
+    ]
+  },
+  {
+    "objectID": "mm/mm.html",
+    "href": "mm/mm.html",
+    "title": "Appendix C — Mind Maps",
+    "section": "",
+    "text": "Creativity",
+    "crumbs": [
+      "Appendices",
+      "<span class='chapter-number'>C</span>  <span class='chapter-title'>Mind Maps</span>"
+    ]
+  },
+  {
+    "objectID": "mm/mm.html#creativity",
+    "href": "mm/mm.html#creativity",
+    "title": "Appendix C — Mind Maps",
+    "section": "",
+    "text": "0808-mind_map_example.jpg",
+    "crumbs": [
+      "Appendices",
+      "<span class='chapter-number'>C</span>  <span class='chapter-title'>Mind Maps</span>"
+    ]
+  }
+]

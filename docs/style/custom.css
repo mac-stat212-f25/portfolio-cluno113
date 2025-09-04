@@ -1,0 +1,81 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fira+Mono:wght@400;500;700&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
+* {
+  font-family: 'Poppins', sans-serif;
+}
+
+pre, code, kbd, samp, .sourceCode, .cell-code {
+  font-family: "Fira Mono", SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+kbd {
+  border-radius: .25rem;
+  padding: .2em;
+}
+
+h2 {
+  margin-top: 4em;
+}
+
+h3 {
+  margin-top: 3em;
+}
+
+.menu-text, .nav-link, #toc-title {
+  font-size: .9em;
+}
+
+.text-start, .chapter-number {
+  font-weight: bold;
+}
+
+.sidebar-item-text.sidebar-link.active, .sidebar-item-text.sidebar-link.active .chapter-number {
+  color: #18bc9c;
+}
+
+p + ul, p + ol {
+  margin-top: -1em;
+}
+
+a:link {
+  text-decoration: none;
+}
+a:visited {
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+a:active {
+  text-decoration: none;
+}
+
+.code-tools-button {
+  padding: .2em .5em;
+  background-color: #ffffff;
+  border: none;
+  color: #161a20;
+  border-radius: 1000px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.code-tools-button::after {
+  content: '';
+  position: absolute;
+  height: 110%;
+  width: 105%;
+  border-radius: 1000px;
+  background-image: linear-gradient(to bottom right, #008cff, #e100ff);
+  z-index: -1;
+}
+
+.code-tools-button:hover {
+  z-index: 0;
+  color: #f0f0f0;
+  box-shadow: 40px 0 100px #008cff85, -40px 0 100px #e100ffbb ;
+}
