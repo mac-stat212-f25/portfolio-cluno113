@@ -2,4 +2,120 @@
 title: "TidyTuesday Sample 1"
 ---
 
-Add content here
+## Global dataset for seized and non-intercepted illegal cheetah trade (Acinonyx jubatus) 2010–2019
+### Variables
+```{r include = FALSE}
+library(readxl)
+data <- read_excel("../../data/raw/Tricorache et al_Global trade dataset for cheetah.xlsx")
+```
+
+The variables within this dataset include:
+- Incident No.; Assigned by researcher
+- Incident Type; Animal Injury / Mortality / Welfare Possession/trade Seizure
+- Incident Date; DD-MMM-YY, TOTALS
+- Discovery Date; DD-MMM-YY (date when incident was discovered by researcher)
+- Country Role; O = Origin T = Transit D = Destination
+- Region
+- Country
+- City/Region
+- Location Type; Unknown, Rural area, Border Crossing, Private Home, Airport, Farm, etc.
+- Origin if known
+- Transit if known
+- Destination if known
+- Report grading; 
+    - A = True; Used when there is no doubt as to the authenticity and reliability of the source or verification means used to corroborate it, e.g., digital evidence, official records, as well as incidents witnessed by the research team.
+
+    - B = Second hand but source known; Related to a source which has, in most instances, proved reliable, and/or provided firsthand information. This could include police officers, regular informants who have proven reliable previously, rescue facilities and witnesses.
+
+    - C = Unknown but corroborated; Used when the source is unknown or did not provide firsthand information, but the incident has been confirmed by secondary means.
+
+    - D = Deemed Credible; Used when the information provided reflects details deemed accurate. It may also be used for incidents involving known individuals, e.g., a known seller.
+
+    - E = Unable to Judge; Used when it is not possible to make an informed decision based on the available evidence, e.g., confusion with species involved (cheetah vs leopard) or the inability to corroborate the information through other sources.
+
+    - F = Suspected false; Generally, not included in this dataset, but refers to information which is known or believed to be false. It may be possible, however, to make use of the information if it helps us to understand criminal relationships.
+
+- Verif means; Photo and/or video, official records, source reliability, known sellers, image search.
+- Ultimate Source Type; A = Official, B = Database, C = Primary, D = Secondary, E = Seller
+- Ult.Verif.Source; E.g., photo, video, official records, site visit
+- Ult.Source Reliability; A = always B = mostly C = fairly D = sometimes E = unreliable F = unknown
+- Orig.Source Type; A = Original research B = Official C = Open source D = Direct Report
+- Medium; e.g. Email, phone, report, database
+- Original Source; Name or identifier
+- Day
+- Month
+- Year
+- # Cheetahs; If known and in full cheetah units.
+- Units; Bushmeat, Claws, Head, Live, Other, Skin, Skin pieces, Skull, Stuffed, Teeth, Trophy
+- Incident Description
+- Confiscated; # of units
+- Surrendered
+- Alive; # live units at or post confiscation
+- Died; # death units at or following confiscation if known
+- LTF / UNK Fate; # units lost to follow up or unknown fate
+- Action Taken
+- Outcome
+- Detecting Agency
+- POI Assigned ID
+- Other info / URL
+
+```{r}
+str(data)
+```
+### Research Questions Development 
+
+Where were all live cheetahs found?
+```{r}
+library(dplyr)
+library(tidyverse)
+library(janitor)
+library(leaflet)
+library(ggplot2)
+library(tidygeocoder)
+
+country <- data %>%
+  janitor::clean_names() %>%
+  filter(units == "Live") %>%
+  select(country) 
+
+locations <- country %>%
+  geocode(country, method = "osm", lat = lat, long = lng)
+saveRDS(locations, "../../data/processed/locations.RDS")
+
+leaflet(locations) %>%
+  addTiles() %>%
+  addMarkers(~lng, ~lat, popup = ~country)
+```
+\
+I would like to use location to better understand how and what happened in these recorded illegal cheetah trade incidents. For example, I could bind this location data to different variables in the dataset to show spatially how many cheetahs were found in these countries. 
+\
+
+How many cheetahs were found throughout the years?
+
+```{r}
+data <- data %>%
+  clean_names() %>%
+  slice(-c(1, 2)) 
+
+data %>%
+  group_by(year) %>%
+  filter(!is.na(year)) %>%
+  filter(number_cheetahs != "~") %>%
+  filter(number_cheetahs != "UNK") %>%
+  mutate(number_cheetahs = as.numeric(number_cheetahs)) %>%
+  filter(year >= 2010 & year <= 2019) %>%
+  ggplot(aes(x = year, y = number_cheetahs)) +
+  geom_col() +
+  labs(
+    title = "Number of Cheetahs Through 2010-2019",
+    x = "Year",
+    y = "Number of Cheetahs"
+  )
+```
+
+\
+This plot helped me see how many cheetahs were counted in all of the incidents recorded. I believe this can help me delve into questions such as:
+- How are illegal cheetah trade incidents changing in their locations, units, and incident types throughout the years?
+- What are the most common incidents seen in the illegal cheetah trade?
+
+
