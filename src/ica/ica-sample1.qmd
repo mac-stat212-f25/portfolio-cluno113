@@ -2,4 +2,59 @@
 title: "ICA Sample 1"
 ---
 
-Add content here
+```{r}
+library(tidyverse)
+weather <- read_csv("https://mac-stat.github.io/data/sfo_weather.csv")
+```
+
+```{r}
+library(dplyr)
+library(ggplot2)
+weather_clean <- read_csv("../../data/raw/weather_clean.csv") %>%
+  janitor::clean_names()
+weather_clean$date <- as.Date(weather_clean$date_in_year - 1, origin = "2021-01-01")
+
+temp <- ggplot(weather_clean, aes(x = date)) +
+  geom_linerange(aes(
+    ymin = record_low,
+    ymax = record_high),
+    color = "#ECEBE3") +
+  geom_linerange(aes(
+    ymin = normal_low,
+    ymax = normal_high),
+    color = "#C8B8BA") +
+  geom_linerange(aes(
+    ymin = low,
+    ymax = high),
+    color = "#A90248") +
+  scale_x_date(
+    date_labels = "%b",        # Short month names (Jan, Feb, ...)
+    date_breaks = "1 month"    # Tick every month
+  ) +
+  theme_classic() +
+  theme(axis.title = element_blank(),
+    axis.text.y = element_text(size = 8),
+    axis.text.x = element_text(size = 9),
+    panel.grid = element_blank())
+```
+
+
+```{r}
+temp 
+```
+
+```{r}
+ggplot(weather_clean) +
+  geom_area(aes(x = date, y = culm_prec), fill = "#ebeae2", color = "#32a3d8") +
+  geom_point(
+    data = subset(weather_clean, record_precip == TRUE),
+    aes(y = culm_prec),
+    shape = 17,
+    size = 2,
+    color = "#32a3d8"
+  ) +
+  scale_x_date(date_labels = "%b", date_breaks = "1 month") +
+  theme_classic()
+```
+
+

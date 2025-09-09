@@ -7,3 +7,7 @@
 ## Review
 
 ![review-mm.png](review-mm.png)
+
+## Advanced Data Visualization
+
+![adv-data-viz.jpg](adv-data-viz.jpg)
