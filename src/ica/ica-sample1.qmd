@@ -9,10 +9,28 @@ weather <- read_csv("https://mac-stat.github.io/data/sfo_weather.csv")
 
 ```{r}
 library(dplyr)
-library(ggplot2)
-weather_clean <- read_csv("../../data/raw/weather_clean.csv") %>%
+library(tidyverse)
+library(lubridate)
+library(readr)
+
+weather <- read_csv("../../../portfolio-cluno113/data/raw/weather.csv")
+
+weather <- weather %>% 
+  mutate(PrecipYr = na_if(PrecipYr, 99999)) 
+  
+weather <- weather %>% 
+  mutate(date = as.Date(date, format = "%m/%d/%y")) %>% 
+  mutate(day_of_year = yday(date))
+
+weather_clean <- weather %>% 
+  mutate(month_name = format(date, "%b"))
+
+write_csv(weather_clean, "../../../portfolio-cluno113/data/raw/weather_clean.csv")
+
+weather_clean <- weather_clean |> 
   janitor::clean_names()
-weather_clean$date <- as.Date(weather_clean$date_in_year - 1, origin = "2021-01-01")
+
+weather_clean$date <- as.Date(weather_clean$date - 1, origin = "2021-01-01")
 
 temp <- ggplot(weather_clean, aes(x = date)) +
   geom_linerange(aes(
@@ -38,10 +56,6 @@ temp <- ggplot(weather_clean, aes(x = date)) +
     panel.grid = element_blank())
 ```
 
-
-```{r}
-temp 
-```
 
 ```{r}
 prec <- ggplot(weather_clean) +
