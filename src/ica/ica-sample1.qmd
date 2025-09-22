@@ -44,7 +44,7 @@ temp
 ```
 
 ```{r}
-ggplot(weather_clean) +
+prec <- ggplot(weather_clean) +
   geom_area(aes(x = date, y = culm_prec), fill = "#ebeae2", color = "#32a3d8") +
   geom_point(
     data = subset(weather_clean, record_precip == TRUE),
@@ -55,6 +55,11 @@ ggplot(weather_clean) +
   ) +
   scale_x_date(date_labels = "%b", date_breaks = "1 month") +
   theme_classic()
+```
+
+```{r}
+library(patchwork)
+temp / prec + plot_layout(widths = c(2, 1), heights = c(3, 1))
 ```
 
 
