@@ -1,0 +1,85 @@
+---
+title: "cp1"
+format: html
+---
+
+# Adv Data Viz CP
+
+1. What geom do I use to create a barplot using the original raw data (not summarized)?
+\
+geom_bar
+\
+\
+2. What geom do I use to create a barplot using already summarized data (from count())?
+\
+geom_col
+\
+\
+7. Which of these geom lines of code provides a proportional bar chart?
+\
+\
+ggplot(aes(x, fill) + geom_bar(position = 'fill')
+
+# Adv Spatial Viz P1 CP
+
+2. What are the two components of a CRS/GCS?
+\
+Datum + Ellipsoid Model
+\
+\
+4. Why is it insufficient to identify a location by its latitude and longitude?
+\
+Longitude and latitude are calculated based on chosen a coordinate reference system (datum + ellipsoid model) and so that value of longitude and latitude of a location might change if the CRS changes.
+\
+\
+5. Why do we need to be mindful about CRSs when working with different spatial datasets?
+\
+* Different CRSs may use different units (e.g., meters, feet). Consistency in units is essential for accurate distance and area calculations.
+* Joining datasets from multiple sources requires a common CRS.
+* Different datasets may use different CRSs. If these CRSs are not accounted for, the spatial points/regions will not align correctly on a map.
+\
+\
+
+# Adv Data Wrangling P1 CP
+1. sqrt(2)^2 == 2 is [1] FALSE
+\
+The computer first calculates sqrt(2) and saves some but not all decimal places of 1.414214... so when you square that number, it is almost but not quite 2.
+\
+\
+2. TRUE & NA
+\
+[1] NA
+\
+\
+3. TRUE | NA 
+\
+[1] TRUE
+\
+\
+4. sum(c(TRUE,TRUE,FALSE,TRUE))
+\
+3
+\
+\
+5. if_else(condition,true,false)
+\
+Useful when you are transforming values of a vector if a particular condition holds.
+\
+\
+6. parse_number()
+\
+Useful when you have a variable that has non-numeric symbols such as $, %, or commas that you want to remove and convert to an integer or double numeric vector.
+\
+\
+7. Recycling in R refers to
+\
+the repeating of a short vector when arithmetic (and logical operations) is used on two vectors of different lengths.
+\
+\
+8. 
+
+
+
+
+
+
