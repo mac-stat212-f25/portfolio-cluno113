@@ -1,0 +1,142 @@
+---
+title: "Claire's Exam 1"
+format: html
+---
+
+```{r}
+library(dplyr)
+library(readr)
+library(ggplot2)
+```
+
+```{r}
+url <- "https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv"
+df_states <- readr::read_csv(url)
+glimpse(df_states)
+```
+```{r}
+df_ny_raw <- df_states %>% 
+    filter(state == "New York") 
+
+glimpse(df_ny_raw)
+```
+
+```{r}
+df_ny_raw %>% 
+    ggplot(aes(x = date, y = cases)) +
+    geom_line()
+
+# Lag function takes the difference between the current date and the previous date
+df_ny = df_ny_raw %>% 
+    mutate(cases = cases - lag(cases,
+                               default = 0))
+
+df_ny %>% 
+    ggplot(aes(x = date, y = cases)) +
+    geom_line()
+```
+```{r}
+# For day-to-day variability, sum the case counts from the current day and the previous 6 days and  
+# divide by 7
+
+df_ny_smooth = df_ny %>% 
+    mutate(smooth = sum(cases, 
+                        lag(cases, 1), lag(cases, 2), 
+                        lag(cases, 3), lag(cases, 4),
+                        lag(cases, 5), lag(cases, 6))
+                    /7)
+
+# Or, create a function to do so
+rolling_average <- function(x, period = 7){
+    
+    total = x
+    
+    for(i in 1:period-1){
+        total = total + lag(x,i)
+    }
+    
+    return(total/period)
+    
+}
+
+df_ny_smooth = df_ny %>% 
+    mutate(smooth = rolling_average(cases))
+
+df_ny_smooth
+```
+
+```{r}
+# Basic Chart
+plot_nyt <- df_ny_smooth %>% 
+    filter(!is.na(smooth)) %>% 
+    ggplot(aes(x = date, y = smooth)) +
+    geom_line(color = "red") + 
+    geom_area(fill = "red", alpha = .25)
+
+plot_nyt
+```
+
+```{r}
+# themes to note: panel.grid and background
+plot_nyt <- plot_nyt +
+theme(
+          panel.background = element_blank(),    
+          axis.text.y = element_text(angle = 0, vjust = -.5, 
+                                     margin = margin(r = -30)),
+          panel.grid.minor = element_blank(),
+          panel.grid.major.x = element_blank(),
+          panel.grid.major.y = element_line(colour = 'light grey', 
+                                          linetype = 'dashed',size = .35),
+          axis.ticks.x = element_line(color = "light grey"),
+          axis.ticks.y = element_blank(),
+          axis.line.x = element_line(colour = "light grey", linetype = "solid",
+                                     size = .5))
+plot_nyt
+```
+
+```{r}
+# Adjusting the scales
+breaks <- scales::extended_breaks()(df_ny_smooth$smooth)
+breaks <- breaks[2:length(breaks)]
+
+plot_nyt <- plot_nyt +
+    scale_x_date(expand = c(0,0),
+                 date_labels = "%b-%Y") +
+    scale_y_continuous(expand = c(0,0),
+                       breaks = breaks,
+                       limits = c(0,max(df_ny_smooth$smooth))) +
+    labs(y = NULL,
+         x = NULL,
+         title = "New Reported Cases: New York")
+plot_nyt
+```
+
+```{r}
+# Creating labels
+max_date = df_ny$date %>% median() + 60
+min_date = df_ny$date %>% median() - 60
+
+label_vals = df_ny_smooth %>% 
+    filter(date > min_date, date < max_date) %>% 
+    arrange(desc(smooth)) %>% 
+    top_n(1)
+
+label_vals 
+```
+
+```{r}
+plot_nyt +
+    annotate("text", x = label_vals$date, 
+             y = label_vals$smooth * 1.4, 
+             label = "7-day\naverage",
+             size = 3.5,
+             fontface = "plain") +
+    annotate("segment", x = label_vals$date, xend = label_vals$date,
+             y = label_vals$smooth, 
+             yend = label_vals$smooth * 1.2,
+             size = .25) 
+```
+
+
+
+
