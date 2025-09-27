@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.42">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>TidyTuesday Sample 1 – COMP/STAT212 Portfolio</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../src/tt/2025-07-15.html" rel="next">
+<link href="../../src/pv/pv-01.html" rel="prev">
+<script src="../../site_libs/cookie-consent/cookie-consent.js"></script>
+<link href="../../site_libs/cookie-consent/cookie-consent.css" rel="stylesheet">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-b53751a350365c71b6c909e95f209ed1.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-463f7e572b85bff0cfe833e89a202fa4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-2b27489b1280a247593da265a4955406.min.css" rel="prefetch" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark"><script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script><script type="text/javascript" charset="UTF-8">
+document.addEventListener('DOMContentLoaded', function () {
+cookieconsent.run({
+  "notice_banner_type":"simple",
+  "consent_type":"implied",
+  "palette":"light",
+  "language":"en",
+  "page_load_consent_levels":["strictly-necessary","functionality","tracking","targeting"],
+  "notice_banner_reject_button_hide":false,
+  "preferences_center_close_button_hide":false,
+  "website_name":""
+  ,
+"language":"en"
+  });
+});
+</script><style>html{ scroll-behavior: smooth; }</style>
+<link href="../../site_libs/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet">
+<script src="../../site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script><script src="../../site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script><link href="../../site_libs/leaflet-1.3.1/leaflet.css" rel="stylesheet">
+<script src="../../site_libs/leaflet-1.3.1/leaflet.js"></script><link href="../../site_libs/leafletfix-1.0.0/leafletfix.css" rel="stylesheet">
+<script src="../../site_libs/proj4-2.6.2/proj4.min.js"></script><script src="../../site_libs/Proj4Leaflet-1.0.1/proj4leaflet.js"></script><link href="../../site_libs/rstudio_leaflet-1.3.1/rstudio_leaflet.css" rel="stylesheet">
+<script src="../../site_libs/leaflet-binding-2.2.3/leaflet.js"></script><link rel="stylesheet" href="../../style/custom.css">
+</head>
+<body class="nav-sidebar docked">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top"><nav class="quarto-secondary-nav"><div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../src/tt/2025-07-08.html">TidyTuesday</a></li><li class="breadcrumb-item"><a href="../../src/tt/2025-07-08.html"><span class="chapter-title">TidyTuesday Sample 1</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav></header><!-- content --><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto"><div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
+      <a href="../../index.html" class="sidebar-logo-link">
+      <img src="../../assets/sidebar-logo.png" alt="" class="sidebar-logo py-0 d-lg-inline d-none"></a>
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../../">Your Name Here</a> 
+        <div class="sidebar-tools-main">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Welcome</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Prof Viz</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../src/pv/pv-01.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Professional Viz Sample</span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">TidyTuesday</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../src/tt/2025-07-08.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">TidyTuesday Sample 1</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../src/tt/2025-07-15.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">TidyTuesday Sample 2</span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">In-Class Activities</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../src/ica/ica-sample1.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">ICA Sample 1</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../src/ica/ica-sample2.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">ICA Sample 2</span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">Appendices</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../src/appx/appx-sample1.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Appendix Sample 1</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../src/appx/appx-sample2.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Appendix Sample 2</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../mm/mm.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Mind Maps</span></a>
+  </div>
+</li>
+      </ul>
+</li>
+    </ul>
+</div>
+</nav><div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="99"><h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+<li>
+<a href="#global-dataset-for-seized-and-non-intercepted-illegal-cheetah-trade-acinonyx-jubatus-20102019" id="toc-global-dataset-for-seized-and-non-intercepted-illegal-cheetah-trade-acinonyx-jubatus-20102019" class="nav-link active" data-scroll-target="#global-dataset-for-seized-and-non-intercepted-illegal-cheetah-trade-acinonyx-jubatus-20102019">Global dataset for seized and non-intercepted illegal cheetah trade (Acinonyx jubatus) 2010–2019</a>
+  <ul class="collapse">
+<li><a href="#variables" id="toc-variables" class="nav-link" data-scroll-target="#variables">Variables</a></li>
+  <li><a href="#research-questions-development" id="toc-research-questions-development" class="nav-link" data-scroll-target="#research-questions-development">Research Questions Development</a></li>
+  </ul>
+</li>
+  </ul></nav>
+    </div>
+<!-- main -->
+<main class="content column-body" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../src/tt/2025-07-08.html">TidyTuesday</a></li><li class="breadcrumb-item"><a href="../../src/tt/2025-07-08.html"><span class="chapter-title">TidyTuesday Sample 1</span></a></li></ol></nav><div class="quarto-title">
+<div class="quarto-title-block"><div><h1 class="title"><span class="chapter-title">TidyTuesday Sample 1</span></h1><button type="button" class="btn code-tools-button dropdown-toggle" id="quarto-code-tools-menu" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi"></i> Code</button><ul class="dropdown-menu dropdown-menu-end" aria-labelelledby="quarto-code-tools-menu"><li><a id="quarto-show-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Show All Code</a></li><li><a id="quarto-hide-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Hide All Code</a></li><li><hr class="dropdown-divider"></li><li><a id="quarto-view-source" class="dropdown-item" href="javascript:void(0)" role="button">View Source</a></li></ul></div></div>
+</div>
+
+
+
+<div class="quarto-title-meta column-body">
+
+    
+  
+    
+  </div>
+  
+
+
+</header><section id="global-dataset-for-seized-and-non-intercepted-illegal-cheetah-trade-acinonyx-jubatus-20102019" class="level2"><h2 class="anchored" data-anchor-id="global-dataset-for-seized-and-non-intercepted-illegal-cheetah-trade-acinonyx-jubatus-20102019">Global dataset for seized and non-intercepted illegal cheetah trade (Acinonyx jubatus) 2010–2019</h2>
+<section id="variables" class="level3"><h3 class="anchored" data-anchor-id="variables">Variables</h3>
+<p>The variables within this dataset include: - Incident No.; Assigned by researcher<br>
+- Incident Type; Animal Injury / Mortality / Welfare Possession/trade Seizure<br>
+- Incident Date; DD-MMM-YY, TOTALS<br>
+- Discovery Date; DD-MMM-YY (date when incident was discovered by researcher)<br>
+- Country Role; O = Origin T = Transit D = Destination<br>
+- Region<br>
+- Country<br>
+- City/Region<br>
+- Location Type; Unknown, Rural area, Border Crossing, Private Home, Airport, Farm, etc.<br>
+- Origin if known<br>
+- Transit if known<br>
+- Destination if known<br>
+- Report grading;<br>
+- Verif means; Photo and/or video, official records, source reliability, known sellers, image search.<br>
+- Ultimate Source Type; A = Official, B = Database, C = Primary, D = Secondary, E = Seller<br>
+- Ult.Verif.Source; E.g., photo, video, official records, site visit<br>
+- Ult.Source Reliability; A = always B = mostly C = fairly D = sometimes E = unreliable F = unknown<br>
+- Orig.Source Type; A = Original research B = Official C = Open source D = Direct Report<br>
+- Medium; e.g.&nbsp;Email, phone, report, database<br>
+- Original Source; Name or identifier<br>
+- Day<br>
+- Month<br>
+- Year<br>
+- Number of Cheetahs; If known and in full cheetah units.<br>
+- Units; Bushmeat, Claws, Head, Live, Other, Skin, Skin pieces, Skull, Stuffed, Teeth, Trophy<br>
+- Incident Description<br>
+- Confiscated; number of units<br>
+- Surrendered<br>
+- Alive; number of live units at or post confiscation<br>
+- Died; number of death units at or following confiscation if known<br>
+- LTF / UNK Fate; number of units lost to follow up or unknown fate<br>
+- Action Taken<br>
+- Outcome<br>
+- Detecting Agency<br>
+- POI Assigned ID<br>
+- Other info / URL</p>
+<div class="cell">
+<details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">str</span>(data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details><div class="cell-output cell-output-stdout">
+<pre><code>tibble [1,886 × 38] (S3: tbl_df/tbl/data.frame)
+ $ Incident No.           : chr [1:1886] NA NA "PT-2010-001" "PT-2010-002" ...
+ $ Incident Type          : chr [1:1886] "Animal Injury / Mortality / Welfare\r\nPossession/trade\r\nSeizure" NA "Seizure" "Seizure" ...
+ $ Incident Date          : chr [1:1886] NA "TOTALS" "40191" "40192" ...
+ $ Discovery Date         : num [1:1886] NA NA 44070 42300 41149 ...
+ $ Country Role           : chr [1:1886] "O = Origin\r\nT = Transit\r\nD = Destination" NA "D" "O" ...
+ $ Region                 : chr [1:1886] NA NA "Europe" "East Africa" ...
+ $ Country                : chr [1:1886] NA NA "Spain" "Kenya" ...
+ $ City/Region            : chr [1:1886] NA NA NA "Mombasa" ...
+ $ Location Type          : chr [1:1886] NA NA "Unknown" "Rural area" ...
+ $ Origin if known        : chr [1:1886] NA NA NA NA ...
+ $ Transit if known       : chr [1:1886] NA NA "E Europe" NA ...
+ $ Destination if known   : chr [1:1886] NA NA NA NA ...
+ $ Report grading         : chr [1:1886] "A = True\r\nB = Second hand but source known\r\nC = Unknown but corroborated\r\nD = Unable to Judge\r\nE = Suspected false" NA "D" "A" ...
+ $ Verif means            : chr [1:1886] NA NA "Invest. report" "Seizure" ...
+ $ Ultimate source type   : chr [1:1886] "A = Primary\r\nB = Secondary" NA "C" "A" ...
+ $ Ult. Verif. Source     : chr [1:1886] "Description" NA "El Mundo (ES)" "Original source" ...
+ $ Ult. Source Reliability: chr [1:1886] "A = always\r\nB = mostly\r\nC = fairly\r\nD = sometimes\r\nE = unreliable\r\nF = unknown" NA "C" "A" ...
+ $ Orig. Source Type      : chr [1:1886] "A = Original research\r\nB = Official\r\nC = Open source\r\nD = Direct Report" NA "C" "B" ...
+ $ Medium                 : chr [1:1886] NA NA "Media" "Web site/Direct" ...
+ $ Original Source        : chr [1:1886] NA NA "24minutes.es" "CITES MA" ...
+ $ Day                    : chr [1:1886] NA NA "13" "14" ...
+ $ Month                  : chr [1:1886] NA NA "1" "1" ...
+ $ Year                   : chr [1:1886] NA NA "2010" "2010" ...
+ $ Day (+/-)              : chr [1:1886] "When exact date not known" NA NA NA ...
+ $ Month (+/-)            : chr [1:1886] "When exact date not known" NA "-1" NA ...
+ $ # Cheetahs             : chr [1:1886] NA "4184" "1" "1" ...
+ $ Units                  : chr [1:1886] "Bushmeat\r\nClaws\r\nHead\r\nLive\r\nOther\r\nSkin\r\nSkin pieces\r\nSkull\r\nStuffed\r\nTeeth\r\nTrophy" NA "Live" "Skin" ...
+ $ Incident Description   : chr [1:1886] NA NA "cheetah, lions,  tiger, Iberian wolf, European Lynx, 3 pumas, eagle and falcons seized. Animals were transporte"| __truncated__ "Transported on land as luggage, confiscated by KWS" ...
+ $ Confiscated            : chr [1:1886] "# of units if known" "736" "1" "1" ...
+ $ Surrendered            : num [1:1886] NA 20 0 0 0 0 0 0 0 0 ...
+ $ Alive                  : chr [1:1886] "# live units at or post confiscation" "342" "1" "0" ...
+ $ Died                   : chr [1:1886] "# death units at or post confiscation" "759" "0" "1" ...
+ $ LTF/ UNK Fate          : chr [1:1886] "# units lost to follow up" "3083" "0" "0" ...
+ $ Action Taken           : chr [1:1886] NA NA "Confiscated by SEPRONA as part of Operation \"Lobezno\"" NA ...
+ $ Outcome                : chr [1:1886] NA NA "Eight people who sold wildlife products on the internet were arrested. Article provides data on detainees." "1 arrested, 1  prosecuted for Illegal  possession and dealing.  1 given 18 months imprisonment or Kshs 63,000 in default" ...
+ $ Detecting agency       : chr [1:1886] NA NA "SEPRONA (Nature Protection Service)" "Kenya Wildlife Service (KWS)" ...
+ $ POI Assigned ID        : chr [1:1886] "Suspects, person of interest" NA "Unknown x 8" "Unknown" ...
+ $ Other info / URL       : chr [1:1886] "URLs" NA "https://www.laregion.es/articulo/galicia/desarticulada-red-traficaba-especies-protegidas-comunidades-ellas-gali"| __truncated__ "https://cites.org/sites/default/files/eng/com/sc/66/E-SC66-32-05_Annex.pdf" ...</code></pre>
+</div>
+</div>
+</section><section id="research-questions-development" class="level3"><h3 class="anchored" data-anchor-id="research-questions-development">Research Questions Development</h3>
+<p>Where were all live cheetahs found?</p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="leaflet html-widget html-fill-item" id="htmlwidget-da43af3433cf90ce745c" style="width:100%;height:464px;"></div>
+<script type="application/json" data-for="htmlwidget-da43af3433cf90ce745c">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addTiles","args":["https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",null,null,{"minZoom":0,"maxZoom":18,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":1,"detectRetina":false,"attribution":"&copy; <a href=\"https://openstreetmap.org/copyright/\">OpenStreetMap<\/a>,  <a href=\"https://opendatacommons.org/licenses/odbl/\">ODbL<\/a>"}]},{"method":"addMarkers","args":[[39.3260685,24.0002488,24.0002488,-23.2335499,31.1667049,24.0002488,24.0002488,25.6242618,24.0002488,31.1667049,-23.2335499,9.7277474,9.7277474,25.6242618,8.3676771,25.6242618,9.7277474,24.0002488,25.6242618,25.6242618,29.2733964,9.7277474,25.6242618,10.2116702,25.6242618,1.4419683,-6.5247123,-28.8166236,1.4419683,9.7277474,9.7277474,24.0002488,24.0002488,24.0002488,9.7277474,24.0002488,9.7277474,25.6242618,24.0002488,9.7277474,24.0002488,25.6242618,9.7277474,9.7277474,29.2733964,25.6242618,25.6242618,9.7277474,24.0002488,9.7277474,-28.8166236,9.7277474,24.0002488,9.7277474,9.7277474,9.7277474,-28.8166236,9.7277474,9.7277474,9.7277474,26.2540493,24.0002488,24.0002488,9.7277474,54.7023545,38.9953683,24.0002488,24.0002488,32.6475314,24.0002488,24.0002488,24.0002488,9.7277474,9.7277474,29.2733964,9.7277474,9.7277474,24.0002488,25.6242618,25.6242618,26.2540493,24.0002488,25.6242618,9.7277474,24.0002488,24.0002488,24.0002488,24.0002488,24.0002488,16.3471243,24.0002488,24.0002488,24.0002488,8.3676771,-23.1681782,24.0002488,24.0002488,24.0002488,24.0002488,24.0002488,9.7277474,9.7277474,24.0002488,24.0002488,24.0002488,25.6242618,11.8145966,24.0002488,9.7277474,24.0002488,29.2733964,24.0002488,24.0002488,29.2733964,25.6242618,9.7277474,9.7277474,25.6242618,25.6242618,16.3471243,24.0002488,29.2733964,25.6242618,9.7277474,9.7277474,9.7277474,9.7277474,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,29.2733964,29.2733964,29.2733964,25.6242618,24.0002488,24.0002488,25.6242618,9.7277474,29.2733964,29.2733964,25.6242618,29.2733964,10.2116702,9.7277474,25.6242618,-18.4554963,29.2733964,29.2733964,25.6242618,24.0002488,29.2733964,-23.2335499,24.0002488,24.0002488,29.2733964,24.0002488,25.6242618,10.2116702,25.6242618,29.2733964,24.0002488,25.6242618,29.2733964,29.2733964,29.2733964,29.2733964,29.2733964,10.2116702,10.2116702,11.8145966,29.2733964,29.2733964,25.6242618,24.0002488,24.0002488,29.2733964,29.2733964,24.0002488,10.2116702,25.3336984,24.0002488,24.0002488,24.0002488,29.2733964,24.0002488,24.0002488,25.6242618,10.2116702,24.0002488,29.2733964,25.6242618,10.2116702,25.3336984,25.6242618,10.2116702,9.7277474,9.7277474,9.7277474,29.2733964,29.2733964,29.2733964,25.3336984,10.2116702,29.2733964,24.0002488,29.2733964,29.2733964,24.0002488,29.2733964,10.2116702,29.2733964,29.2733964,29.2733964,29.2733964,29.2733964,29.2733964,29.2733964,25.3336984,29.2733964,29.2733964,29.2733964,29.2733964,24.0002488,29.2733964,29.2733964,9.7277474,29.2733964,29.2733964,29.2733964,29.2733964,29.2733964,29.2733964,25.6242618,25.6242618,29.2733964,10.2116702,29.2733964,29.2733964,25.6242618,25.6242618,29.2733964,25.6242618,29.2733964,29.2733964,29.2733964,29.2733964,29.2733964,25.6242618,29.2733964,29.2733964,-23.2335499,10.2116702,25.3336984,29.2733964,16.3471243,29.2733964,29.2733964,29.2733964,29.2733964,25.6242618,29.2733964,29.2733964,29.2733964,29.2733964,25.3336984,29.2733964,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,29.2733964,29.2733964,25.6242618,25.6242618,25.6242618,9.7277474,25.6242618,29.2733964,24.0002488,29.2733964,29.2733964,25.6242618,9.7277474,29.2733964,25.6242618,29.2733964,25.6242618,25.6242618,29.2733964,29.2733964,25.6242618,24.0002488,25.6242618,25.6242618,25.6242618,29.2733964,25.6242618,25.6242618,25.6242618,10.2116702,24.0002488,25.6242618,29.2733964,25.3336984,10.2116702,25.6242618,25.6242618,25.6242618,24.0002488,25.6242618,25.6242618,16.3471243,25.6242618,24.0002488,24.0002488,25.6242618,25.6242618,24.0002488,29.2733964,29.2733964,29.2733964,24.0002488,25.6242618,29.2733964,25.6242618,24.0002488,25.6242618,29.2733964,25.6242618,-6.5247123,29.2733964,29.2733964,24.0002488,24.0002488,25.6242618,25.6242618,25.6242618,29.2733964,29.2733964,29.2733964,25.6242618,24.0002488,29.2733964,29.2733964,24.0002488,25.6242618,29.2733964,9.7277474,9.7277474,9.7277474,9.7277474,25.6242618,25.6242618,25.6242618,24.0002488,24.0002488,29.2733964,29.2733964,25.6242618,25.6242618,24.0002488,24.0002488,29.2733964,25.6242618,25.6242618,25.6242618,25.6242618,10.2116702,-28.8166236,25.6242618,29.2733964,25.6242618,25.6242618,25.6242618,25.6242618,9.7277474,25.6242618,24.0002488,25.6242618,25.3336984,24.0002488,25.6242618,25.6242618,25.6242618,29.2733964,29.2733964,16.3471243,25.6242618,25.6242618,33.0955793,24.0002488,40.7696272,24.0002488,25.6242618,29.2733964,29.2733964,25.6242618,29.2733964,10.2116702,25.6242618,29.2733964,29.2733964,29.2733964,25.6242618,25.6242618,24.0002488,25.6242618,25.6242618,24.0002488,25.6242618,25.6242618,25.6242618,24.0002488,8.3676771,25.6242618,25.6242618,64.68631360000001,64.68631360000001,25.6242618,26.2540493,24.0002488,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.3336984,10.2116702,25.6242618,25.6242618,24.0002488,25.6242618,25.6242618,25.6242618,25.6242618,25.3336984,26.1551249,25.6242618,25.6242618,25.6242618,29.2733964,25.6242618,25.6242618,25.6242618,64.68631360000001,24.0002488,25.6242618,25.6242618,25.6242618,9.7277474,25.6242618,25.6242618,25.3336984,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,29.2733964,24.0002488,-28.8166236,24.0002488,25.6242618,25.6242618,25.6242618,29.2733964,25.6242618,16.3471243,16.3471243,16.3471243,25.6242618,29.2733964,25.6242618,25.6242618,29.2733964,25.6242618,29.2733964,25.6242618,29.2733964,29.2733964,24.0002488,10.2116702,25.6242618,25.6242618,25.6242618,29.2733964,25.6242618,25.6242618,25.6242618,25.6242618,24.0002488,29.2733964,26.2540493,26.2540493,10.2116702,9.7277474,29.2733964,24.0002488,25.6242618,26.1551249,25.6242618,29.2733964,29.2733964,29.2733964,29.2733964,29.2733964,25.6242618,24.0002488,24.0002488,29.2733964,29.2733964,29.2733964,25.6242618,25.6242618,25.6242618,25.6242618,29.2733964,25.6242618,25.6242618,25.6242618,24.0002488,29.2733964,29.2733964,29.2733964,26.1551249,9.7277474,25.6242618,25.6242618,29.2733964,16.3471243,25.6242618,9.7277474,29.2733964,9.7277474,9.7277474,25.6242618,25.6242618,24.0002488,29.2733964,29.2733964,29.2733964,29.2733964,29.2733964,25.6242618,29.2733964,25.6242618,25.6242618,25.6242618,25.6242618,29.2733964,25.6242618,29.2733964,29.2733964,25.6242618,29.2733964,24.0002488,53.4250605,25.6242618,25.6242618,29.2733964,29.2733964,24.0002488,24.0002488,25.6242618,25.6242618,26.1551249,29.2733964,9.7277474,29.2733964,25.6242618,16.3471243,25.6242618,25.6242618,25.6242618,29.2733964,25.6242618,25.6242618,25.6242618,10.2116702,25.6242618,25.6242618,16.3471243,25.6242618,29.2733964,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,29.2733964,25.6242618,25.6242618,29.2733964,25.6242618,25.6242618,24.0002488,25.6242618,29.2733964,25.6242618,29.2733964,25.3336984,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,29.2733964,29.2733964,25.6242618,29.2733964,25.6242618,24.0002488,26.2540493,25.6242618,24.0002488,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.3336984,25.6242618,29.2733964,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,29.2733964,25.6242618,16.3471243,16.3471243,25.6242618,24.0002488,25.6242618,24.0002488,24.0002488,25.6242618,25.6242618,25.6242618,29.2733964,25.6242618,25.6242618,29.2733964,24.0002488,25.3336984,29.2733964,25.6242618,25.3336984,29.2733964,25.6242618,29.2733964,16.3471243,25.6242618,9.7277474,25.6242618,25.6242618,29.2733964,25.3336984,25.6242618,29.2733964,29.2733964,25.6242618,25.3336984,25.6242618,25.3336984,16.3471243,25.6242618,25.6242618,25.6242618,25.6242618,9.7277474,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,29.2733964,29.2733964,25.6242618,25.6242618,25.6242618,24.0002488,29.2733964,25.6242618,25.6242618,29.2733964,9.7277474,25.6242618,25.6242618,25.6242618,25.3336984,25.6242618,25.3336984,25.6242618,25.6242618,25.6242618,29.2733964,25.6242618,25.6242618,29.2733964,29.2733964,29.2733964,16.3471243,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,29.2733964,25.3336984,24.0002488,25.3336984,29.2733964,29.2733964,29.2733964,29.2733964,29.2733964,25.6242618,25.6242618,25.6242618,16.3471243,25.6242618,24.0002488,29.2733964,25.6242618,16.3471243,24.0002488,25.6242618,29.2733964,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,9.7277474,25.6242618,24.0002488,25.6242618,25.6242618,29.2733964,29.2733964,-23.2335499,25.6242618,25.6242618,29.2733964,25.3336984,29.2733964,29.2733964,25.3336984,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,9.7277474,32.6475314,21.0000287,25.6242618,16.3471243,29.2733964,25.3336984,64.68631360000001,-28.8166236,24.0002488,25.6242618,1.5333554,24.0002488,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,29.2733964,25.6242618,25.6242618,25.6242618,24.0002488,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.3336984,25.6242618,25.6242618,25.3336984,25.6242618,25.6242618,25.3336984,25.6242618,25.6242618,25.6242618,24.0002488,25.6242618,29.2733964,24.0002488,25.6242618,25.3336984,25.6242618,16.3471243,25.6242618,25.3336984,25.6242618,25.6242618,25.6242618,25.6242618,24.0002488,25.6242618,25.6242618,25.6242618,25.6242618,29.2733964,25.6242618,25.6242618,8.3676771,8.3676771,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.3336984,25.6242618,25.6242618,29.2733964,25.6242618,25.6242618,25.6242618,24.0002488,25.6242618,29.2733964,25.6242618,24.0002488,29.2733964,9.7277474,25.6242618,25.6242618,25.6242618,24.0002488,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,29.2733964,29.2733964,24.0002488,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,10.2116702,25.6242618,25.3336984,25.6242618,25.6242618,25.6242618,25.6242618,25.3336984,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,24.0002488,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,29.2733964,25.3336984,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,9.7277474,25.6242618,25.3336984,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,24.0002488,24.0002488,25.6242618,25.6242618,25.3336984,25.6242618,25.6242618,25.6242618,8.3676771,25.6242618,25.6242618,29.2733964,25.6242618,25.6242618,25.6242618,25.6242618,16.3471243,25.3336984,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,30.3308401,25.6242618,24.0002488,25.6242618,29.2733964,24.0002488,25.6242618,25.6242618,29.2733964,10.2116702,25.6242618,25.3336984,25.6242618,25.6242618,25.3336984,25.6242618,24.0002488,25.3336984,29.2733964,29.2733964,9.7277474,25.3336984,25.6242618,25.3336984,25.6242618,25.6242618,24.0002488,24.0002488,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,29.2733964,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,29.2733964,24.0002488,25.6242618,25.3336984,25.6242618,23.6585116,29.2733964,25.3336984,25.3336984,25.3336984,24.0002488,25.6242618,25.3336984,24.0002488,25.6242618,24.0002488,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,29.2733964,-28.8166236,-28.8166236,24.0002488,25.3336984,25.6242618,25.6242618,29.2733964,25.6242618,25.6242618,25.3336984,25.6242618,25.6242618,24.0002488,24.0002488,9.7277474,25.6242618,25.6242618,25.6242618,25.6242618,24.0002488,25.3336984,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,24.0002488,24.0002488,16.3471243,25.6242618,25.6242618,25.6242618,16.3471243,25.3336984,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,24.0002488,24.0002488,25.6242618,25.6242618,25.3336984,8.3676771,25.6242618,25.6242618,25.6242618,25.6242618,25.3336984,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,29.2733964,25.6242618,24.0002488,24.0002488,25.6242618,29.2733964,24.0002488,24.0002488,25.6242618,25.6242618,25.6242618,29.2733964,29.2733964,25.3336984,25.3336984,24.0002488,25.6242618,25.3336984,25.6242618,26.1551249,25.6242618,25.3336984,25.6242618,25.6242618,25.6242618,29.2733964,29.2733964,29.2733964,25.6242618,25.6242618,25.6242618,24.0002488,8.3676771,25.6242618,24.0002488,25.6242618,25.6242618,25.6242618,25.6242618,-28.8166236,24.0002488,24.0002488,16.3471243,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,24.0002488,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,9.7277474,25.6242618,25.6242618,25.6242618,24.0002488,25.6242618,24.0002488,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,24.0002488,24.0002488,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.3336984,25.6242618,24.0002488,24.0002488,16.3471243,8.3676771,-28.8166236,25.6242618,25.6242618,25.6242618,24.0002488,25.6242618,25.6242618,16.3471243,25.6242618,25.6242618,25.6242618,16.3471243,25.6242618,25.6242618,25.6242618,24.0002488,25.6242618,25.3336984,25.6242618,24.0002488,25.6242618,25.6242618,25.6242618,25.6242618,24.0002488,24.0002488,25.6242618,29.2733964,25.6242618,24.0002488,25.6242618,25.6242618,25.6242618,25.6242618,24.0002488,25.6242618,25.6242618,24.0002488,24.0002488,24.0002488,24.0002488,25.6242618,25.6242618,25.6242618,25.6242618,24.0002488,24.0002488,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,24.0002488,24.0002488,24.0002488,24.0002488,25.3336984,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,24.0002488,25.6242618,25.6242618,10.2116702,8.3676771,16.3471243,25.6242618,25.6242618,25.6242618,9.7277474,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,26.1551249,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,24.0002488,25.3336984,29.2733964,25.6242618,25.6242618,24.0002488,25.6242618,25.6242618,25.6242618,25.6242618,10.2116702,25.6242618,10.2116702,10.2116702,10.2116702,29.2733964,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,9.7277474,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,-28.8166236,25.6242618,24.0002488,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.3336984,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,9.7277474,25.6242618,25.6242618,25.6242618,25.6242618,24.0002488,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.3336984,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,24.0002488,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,24.0002488,25.6242618,-2.4833826,25.6242618,25.6242618,25.6242618,26.2540493,25.6242618,24.0002488,25.6242618,8.3676771,25.6242618,25.6242618,25.6242618,8.3676771,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,8.3676771,25.6242618,25.6242618,25.6242618,25.3336984,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,8.3676771,25.6242618,25.6242618,8.3676771,25.6242618,25.6242618,24.0002488,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,9.7277474,25.6242618,25.6242618,25.6242618,10.2116702,25.6242618,9.7277474,25.6242618,25.6242618,9.7277474,25.6242618,9.7277474,25.6242618,25.6242618,9.7277474,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,21.0000287,9.7277474,24.0002488,25.6242618,25.6242618,25.3336984,25.6242618,8.3676771,8.3676771,25.6242618,64.68631360000001,25.6242618,25.6242618,24.0002488,39.3260685,25.6242618,9.7277474,9.7277474,25.6242618,25.6242618,9.7277474,16.3471243,25.6242618,25.6242618,25.6242618,25.6242618,25.3336984,-2.4833826,24.0002488,24.0002488,25.6242618,24.0002488,9.7277474,8.3676771,24.0002488,25.6242618,8.3676771,25.6242618,25.6242618,25.6242618,8.3676771,9.7277474,25.6242618,25.6242618,25.6242618,25.6242618,-2.4833826,8.3676771,25.6242618,9.7277474,9.7277474,25.6242618,25.6242618,16.3471243,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,9.7277474,25.6242618,16.3471243,25.6242618,25.6242618,24.0002488,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,24.0002488,24.0002488,25.6242618,9.7277474,9.7277474,25.6242618,25.6242618,16.3471243,25.6242618,25.6242618,25.6242618,29.2733964,9.7277474,9.7277474,-23.2335499,9.7277474,9.7277474,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,30.3308401,25.6242618,25.6242618,24.0002488,25.6242618,9.7277474,9.7277474,25.6242618,25.6242618,25.6242618,25.6242618,49.4871968,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,29.2733964,24.0002488,25.6242618,25.6242618,25.6242618,25.6242618,9.7277474,9.7277474,25.6242618,9.7277474,9.7277474,-6.5247123,26.1551249,25.6242618,24.4769288,25.6242618,9.7277474,25.6242618,25.6242618,25.6242618,-23.2335499,24.0002488,25.6242618,9.7277474,32.6475314,24.0002488,25.6242618,24.0002488,9.7277474,9.7277474,9.7277474,24.0002488,-23.1681782,25.6242618,24.0002488,25.6242618,25.6242618,9.7277474,24.0002488,24.0002488,9.7277474,25.6242618,16.3471243,9.7277474,25.6242618,9.7277474,21.0000287,16.3471243,9.7277474,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,24.0002488,23.6585116,25.6242618,30.3308401,25.6242618,8.3676771,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,9.7277474,25.6242618,25.6242618,25.6242618,25.6242618,24.0002488,25.6242618,25.6242618,25.6242618,9.7277474,25.6242618,24.0002488,25.6242618,24.0002488,9.7277474,25.6242618,25.6242618,9.7277474,9.7277474,25.6242618,25.6242618,25.6242618,25.6242618,24.0002488,24.0002488,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,24.0002488,25.6242618,25.6242618,25.6242618,25.6242618,9.7277474,9.7277474,9.7277474,25.6242618,9.7277474,9.7277474,25.6242618,25.6242618,1.4419683,-23.2335499,25.6242618,25.6242618,-28.8166236,-23.2335499,25.6242618,9.7277474,25.6242618,30.3308401,25.6242618,-28.8166236,25.6242618,25.6242618,9.7277474,9.7277474,9.7277474,25.6242618,25.6242618,9.7277474,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,9.7277474,25.6242618,25.6242618,9.7277474,9.7277474,25.6242618,25.6242618,9.7277474,9.7277474,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,-23.2335499,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,25.6242618,9.7277474,25.6242618,25.6242618,25.6242618,25.6242618,9.7277474,9.7277474,25.6242618,25.6242618,25.6242618,25.6242618,9.7277474,-28.8166236,25.6242618,16.3471243,25.6242618,25.6242618,25.6242618,25.6242618],[-4.8379791,53.9994829,53.9994829,17.3231107,36.941628,53.9994829,53.9994829,42.3528328,53.9994829,36.941628,17.3231107,46.0099127,46.0099127,42.3528328,49.083416,42.3528328,46.0099127,53.9994829,42.3528328,42.3528328,47.4979476,46.0099127,42.3528328,38.6521203,42.3528328,38.4313975,35.7878438,24.991639,38.4313975,46.0099127,46.0099127,53.9994829,53.9994829,53.9994829,46.0099127,53.9994829,46.0099127,42.3528328,53.9994829,46.0099127,53.9994829,42.3528328,46.0099127,46.0099127,47.4979476,42.3528328,42.3528328,46.0099127,53.9994829,46.0099127,24.991639,46.0099127,53.9994829,46.0099127,46.0099127,46.0099127,24.991639,46.0099127,46.0099127,46.0099127,29.2675469,53.9994829,53.9994829,46.0099127,-3.2765753,21.9877132,53.9994829,53.9994829,54.5643516,53.9994829,53.9994829,53.9994829,46.0099127,46.0099127,47.4979476,46.0099127,46.0099127,53.9994829,42.3528328,42.3528328,29.2675469,53.9994829,42.3528328,46.0099127,53.9994829,53.9994829,53.9994829,53.9994829,53.9994829,47.8915271,53.9994829,53.9994829,53.9994829,49.083416,24.5928742,53.9994829,53.9994829,53.9994829,53.9994829,53.9994829,46.0099127,46.0099127,53.9994829,53.9994829,53.9994829,42.3528328,42.8453061,53.9994829,46.0099127,53.9994829,47.4979476,53.9994829,53.9994829,47.4979476,42.3528328,46.0099127,46.0099127,42.3528328,42.3528328,47.8915271,53.9994829,47.4979476,42.3528328,46.0099127,46.0099127,46.0099127,46.0099127,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,47.4979476,47.4979476,47.4979476,42.3528328,53.9994829,53.9994829,42.3528328,46.0099127,47.4979476,47.4979476,42.3528328,47.4979476,38.6521203,46.0099127,42.3528328,29.7468414,47.4979476,47.4979476,42.3528328,53.9994829,47.4979476,17.3231107,53.9994829,53.9994829,47.4979476,53.9994829,42.3528328,38.6521203,42.3528328,47.4979476,53.9994829,42.3528328,47.4979476,47.4979476,47.4979476,47.4979476,47.4979476,38.6521203,38.6521203,42.8453061,47.4979476,47.4979476,42.3528328,53.9994829,53.9994829,47.4979476,47.4979476,53.9994829,38.6521203,51.2295295,53.9994829,53.9994829,53.9994829,47.4979476,53.9994829,53.9994829,42.3528328,38.6521203,53.9994829,47.4979476,42.3528328,38.6521203,51.2295295,42.3528328,38.6521203,46.0099127,46.0099127,46.0099127,47.4979476,47.4979476,47.4979476,51.2295295,38.6521203,47.4979476,53.9994829,47.4979476,47.4979476,53.9994829,47.4979476,38.6521203,47.4979476,47.4979476,47.4979476,47.4979476,47.4979476,47.4979476,47.4979476,51.2295295,47.4979476,47.4979476,47.4979476,47.4979476,53.9994829,47.4979476,47.4979476,46.0099127,47.4979476,47.4979476,47.4979476,47.4979476,47.4979476,47.4979476,42.3528328,42.3528328,47.4979476,38.6521203,47.4979476,47.4979476,42.3528328,42.3528328,47.4979476,42.3528328,47.4979476,47.4979476,47.4979476,47.4979476,47.4979476,42.3528328,47.4979476,47.4979476,17.3231107,38.6521203,51.2295295,47.4979476,47.8915271,47.4979476,47.4979476,47.4979476,47.4979476,42.3528328,47.4979476,47.4979476,47.4979476,47.4979476,51.2295295,47.4979476,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,47.4979476,47.4979476,42.3528328,42.3528328,42.3528328,46.0099127,42.3528328,47.4979476,53.9994829,47.4979476,47.4979476,42.3528328,46.0099127,47.4979476,42.3528328,47.4979476,42.3528328,42.3528328,47.4979476,47.4979476,42.3528328,53.9994829,42.3528328,42.3528328,42.3528328,47.4979476,42.3528328,42.3528328,42.3528328,38.6521203,53.9994829,42.3528328,47.4979476,51.2295295,38.6521203,42.3528328,42.3528328,42.3528328,53.9994829,42.3528328,42.3528328,47.8915271,42.3528328,53.9994829,53.9994829,42.3528328,42.3528328,53.9994829,47.4979476,47.4979476,47.4979476,53.9994829,42.3528328,47.4979476,42.3528328,53.9994829,42.3528328,47.4979476,42.3528328,35.7878438,47.4979476,47.4979476,53.9994829,53.9994829,42.3528328,42.3528328,42.3528328,47.4979476,47.4979476,47.4979476,42.3528328,53.9994829,47.4979476,47.4979476,53.9994829,42.3528328,47.4979476,46.0099127,46.0099127,46.0099127,46.0099127,42.3528328,42.3528328,42.3528328,53.9994829,53.9994829,47.4979476,47.4979476,42.3528328,42.3528328,53.9994829,53.9994829,47.4979476,42.3528328,42.3528328,42.3528328,42.3528328,38.6521203,24.991639,42.3528328,47.4979476,42.3528328,42.3528328,42.3528328,42.3528328,46.0099127,42.3528328,53.9994829,42.3528328,51.2295295,53.9994829,42.3528328,42.3528328,42.3528328,47.4979476,47.4979476,47.8915271,42.3528328,42.3528328,44.1749775,53.9994829,44.6736646,53.9994829,42.3528328,47.4979476,47.4979476,42.3528328,47.4979476,38.6521203,42.3528328,47.4979476,47.4979476,47.4979476,42.3528328,42.3528328,53.9994829,42.3528328,42.3528328,53.9994829,42.3528328,42.3528328,42.3528328,53.9994829,49.083416,42.3528328,42.3528328,97.74530609999999,97.74530609999999,42.3528328,29.2675469,53.9994829,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,51.2295295,38.6521203,42.3528328,42.3528328,53.9994829,42.3528328,42.3528328,42.3528328,42.3528328,51.2295295,50.5344606,42.3528328,42.3528328,42.3528328,47.4979476,42.3528328,42.3528328,42.3528328,97.74530609999999,53.9994829,42.3528328,42.3528328,42.3528328,46.0099127,42.3528328,42.3528328,51.2295295,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,47.4979476,53.9994829,24.991639,53.9994829,42.3528328,42.3528328,42.3528328,47.4979476,42.3528328,47.8915271,47.8915271,47.8915271,42.3528328,47.4979476,42.3528328,42.3528328,47.4979476,42.3528328,47.4979476,42.3528328,47.4979476,47.4979476,53.9994829,38.6521203,42.3528328,42.3528328,42.3528328,47.4979476,42.3528328,42.3528328,42.3528328,42.3528328,53.9994829,47.4979476,29.2675469,29.2675469,38.6521203,46.0099127,47.4979476,53.9994829,42.3528328,50.5344606,42.3528328,47.4979476,47.4979476,47.4979476,47.4979476,47.4979476,42.3528328,53.9994829,53.9994829,47.4979476,47.4979476,47.4979476,42.3528328,42.3528328,42.3528328,42.3528328,47.4979476,42.3528328,42.3528328,42.3528328,53.9994829,47.4979476,47.4979476,47.4979476,50.5344606,46.0099127,42.3528328,42.3528328,47.4979476,47.8915271,42.3528328,46.0099127,47.4979476,46.0099127,46.0099127,42.3528328,42.3528328,53.9994829,47.4979476,47.4979476,47.4979476,47.4979476,47.4979476,42.3528328,47.4979476,42.3528328,42.3528328,42.3528328,42.3528328,47.4979476,42.3528328,47.4979476,47.4979476,42.3528328,47.4979476,53.9994829,27.6971358,42.3528328,42.3528328,47.4979476,47.4979476,53.9994829,53.9994829,42.3528328,42.3528328,50.5344606,47.4979476,46.0099127,47.4979476,42.3528328,47.8915271,42.3528328,42.3528328,42.3528328,47.4979476,42.3528328,42.3528328,42.3528328,38.6521203,42.3528328,42.3528328,47.8915271,42.3528328,47.4979476,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,47.4979476,42.3528328,42.3528328,47.4979476,42.3528328,42.3528328,53.9994829,42.3528328,47.4979476,42.3528328,47.4979476,51.2295295,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,47.4979476,47.4979476,42.3528328,47.4979476,42.3528328,53.9994829,29.2675469,42.3528328,53.9994829,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,51.2295295,42.3528328,47.4979476,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,47.4979476,42.3528328,47.8915271,47.8915271,42.3528328,53.9994829,42.3528328,53.9994829,53.9994829,42.3528328,42.3528328,42.3528328,47.4979476,42.3528328,42.3528328,47.4979476,53.9994829,51.2295295,47.4979476,42.3528328,51.2295295,47.4979476,42.3528328,47.4979476,47.8915271,42.3528328,46.0099127,42.3528328,42.3528328,47.4979476,51.2295295,42.3528328,47.4979476,47.4979476,42.3528328,51.2295295,42.3528328,51.2295295,47.8915271,42.3528328,42.3528328,42.3528328,42.3528328,46.0099127,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,47.4979476,47.4979476,42.3528328,42.3528328,42.3528328,53.9994829,47.4979476,42.3528328,42.3528328,47.4979476,46.0099127,42.3528328,42.3528328,42.3528328,51.2295295,42.3528328,51.2295295,42.3528328,42.3528328,42.3528328,47.4979476,42.3528328,42.3528328,47.4979476,47.4979476,47.4979476,47.8915271,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,47.4979476,51.2295295,53.9994829,51.2295295,47.4979476,47.4979476,47.4979476,47.4979476,47.4979476,42.3528328,42.3528328,42.3528328,47.8915271,42.3528328,53.9994829,47.4979476,42.3528328,47.8915271,53.9994829,42.3528328,47.4979476,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,46.0099127,42.3528328,53.9994829,42.3528328,42.3528328,47.4979476,47.4979476,17.3231107,42.3528328,42.3528328,47.4979476,51.2295295,47.4979476,47.4979476,51.2295295,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,46.0099127,54.5643516,57.0036901,42.3528328,47.8915271,47.4979476,51.2295295,97.74530609999999,24.991639,53.9994829,42.3528328,32.2166578,53.9994829,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,47.4979476,42.3528328,42.3528328,42.3528328,53.9994829,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,51.2295295,42.3528328,42.3528328,51.2295295,42.3528328,42.3528328,51.2295295,42.3528328,42.3528328,42.3528328,53.9994829,42.3528328,47.4979476,53.9994829,42.3528328,51.2295295,42.3528328,47.8915271,42.3528328,51.2295295,42.3528328,42.3528328,42.3528328,42.3528328,53.9994829,42.3528328,42.3528328,42.3528328,42.3528328,47.4979476,42.3528328,42.3528328,49.083416,49.083416,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,51.2295295,42.3528328,42.3528328,47.4979476,42.3528328,42.3528328,42.3528328,53.9994829,42.3528328,47.4979476,42.3528328,53.9994829,47.4979476,46.0099127,42.3528328,42.3528328,42.3528328,53.9994829,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,47.4979476,47.4979476,53.9994829,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,38.6521203,42.3528328,51.2295295,42.3528328,42.3528328,42.3528328,42.3528328,51.2295295,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,53.9994829,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,47.4979476,51.2295295,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,46.0099127,42.3528328,51.2295295,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,53.9994829,53.9994829,42.3528328,42.3528328,51.2295295,42.3528328,42.3528328,42.3528328,49.083416,42.3528328,42.3528328,47.4979476,42.3528328,42.3528328,42.3528328,42.3528328,47.8915271,51.2295295,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,71.247499,42.3528328,53.9994829,42.3528328,47.4979476,53.9994829,42.3528328,42.3528328,47.4979476,38.6521203,42.3528328,51.2295295,42.3528328,42.3528328,51.2295295,42.3528328,53.9994829,51.2295295,47.4979476,47.4979476,46.0099127,51.2295295,42.3528328,51.2295295,42.3528328,42.3528328,53.9994829,53.9994829,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,47.4979476,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,47.4979476,53.9994829,42.3528328,51.2295295,42.3528328,-102.0077097,47.4979476,51.2295295,51.2295295,51.2295295,53.9994829,42.3528328,51.2295295,53.9994829,42.3528328,53.9994829,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,47.4979476,24.991639,24.991639,53.9994829,51.2295295,42.3528328,42.3528328,47.4979476,42.3528328,42.3528328,51.2295295,42.3528328,42.3528328,53.9994829,53.9994829,46.0099127,42.3528328,42.3528328,42.3528328,42.3528328,53.9994829,51.2295295,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,53.9994829,53.9994829,47.8915271,42.3528328,42.3528328,42.3528328,47.8915271,51.2295295,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,53.9994829,53.9994829,42.3528328,42.3528328,51.2295295,49.083416,42.3528328,42.3528328,42.3528328,42.3528328,51.2295295,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,47.4979476,42.3528328,53.9994829,53.9994829,42.3528328,47.4979476,53.9994829,53.9994829,42.3528328,42.3528328,42.3528328,47.4979476,47.4979476,51.2295295,51.2295295,53.9994829,42.3528328,51.2295295,42.3528328,50.5344606,42.3528328,51.2295295,42.3528328,42.3528328,42.3528328,47.4979476,47.4979476,47.4979476,42.3528328,42.3528328,42.3528328,53.9994829,49.083416,42.3528328,53.9994829,42.3528328,42.3528328,42.3528328,42.3528328,24.991639,53.9994829,53.9994829,47.8915271,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,53.9994829,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,46.0099127,42.3528328,42.3528328,42.3528328,53.9994829,42.3528328,53.9994829,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,53.9994829,53.9994829,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,51.2295295,42.3528328,53.9994829,53.9994829,47.8915271,49.083416,24.991639,42.3528328,42.3528328,42.3528328,53.9994829,42.3528328,42.3528328,47.8915271,42.3528328,42.3528328,42.3528328,47.8915271,42.3528328,42.3528328,42.3528328,53.9994829,42.3528328,51.2295295,42.3528328,53.9994829,42.3528328,42.3528328,42.3528328,42.3528328,53.9994829,53.9994829,42.3528328,47.4979476,42.3528328,53.9994829,42.3528328,42.3528328,42.3528328,42.3528328,53.9994829,42.3528328,42.3528328,53.9994829,53.9994829,53.9994829,53.9994829,42.3528328,42.3528328,42.3528328,42.3528328,53.9994829,53.9994829,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,53.9994829,53.9994829,53.9994829,53.9994829,51.2295295,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,53.9994829,42.3528328,42.3528328,38.6521203,49.083416,47.8915271,42.3528328,42.3528328,42.3528328,46.0099127,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,50.5344606,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,53.9994829,51.2295295,47.4979476,42.3528328,42.3528328,53.9994829,42.3528328,42.3528328,42.3528328,42.3528328,38.6521203,42.3528328,38.6521203,38.6521203,38.6521203,47.4979476,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,46.0099127,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,24.991639,42.3528328,53.9994829,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,51.2295295,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,46.0099127,42.3528328,42.3528328,42.3528328,42.3528328,53.9994829,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,51.2295295,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,53.9994829,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,53.9994829,42.3528328,117.8902853,42.3528328,42.3528328,42.3528328,29.2675469,42.3528328,53.9994829,42.3528328,49.083416,42.3528328,42.3528328,42.3528328,49.083416,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,49.083416,42.3528328,42.3528328,42.3528328,51.2295295,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,49.083416,42.3528328,42.3528328,49.083416,42.3528328,42.3528328,53.9994829,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,46.0099127,42.3528328,42.3528328,42.3528328,38.6521203,42.3528328,46.0099127,42.3528328,42.3528328,46.0099127,42.3528328,46.0099127,42.3528328,42.3528328,46.0099127,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,57.0036901,46.0099127,53.9994829,42.3528328,42.3528328,51.2295295,42.3528328,49.083416,49.083416,42.3528328,97.74530609999999,42.3528328,42.3528328,53.9994829,-4.8379791,42.3528328,46.0099127,46.0099127,42.3528328,42.3528328,46.0099127,47.8915271,42.3528328,42.3528328,42.3528328,42.3528328,51.2295295,117.8902853,53.9994829,53.9994829,42.3528328,53.9994829,46.0099127,49.083416,53.9994829,42.3528328,49.083416,42.3528328,42.3528328,42.3528328,49.083416,46.0099127,42.3528328,42.3528328,42.3528328,42.3528328,117.8902853,49.083416,42.3528328,46.0099127,46.0099127,42.3528328,42.3528328,47.8915271,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,46.0099127,42.3528328,47.8915271,42.3528328,42.3528328,53.9994829,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,53.9994829,53.9994829,42.3528328,46.0099127,46.0099127,42.3528328,42.3528328,47.8915271,42.3528328,42.3528328,42.3528328,47.4979476,46.0099127,46.0099127,17.3231107,46.0099127,46.0099127,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,71.247499,42.3528328,42.3528328,53.9994829,42.3528328,46.0099127,46.0099127,42.3528328,42.3528328,42.3528328,42.3528328,31.2718321,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,47.4979476,53.9994829,42.3528328,42.3528328,42.3528328,42.3528328,46.0099127,46.0099127,42.3528328,46.0099127,46.0099127,35.7878438,50.5344606,42.3528328,90.2934413,42.3528328,46.0099127,42.3528328,42.3528328,42.3528328,17.3231107,53.9994829,42.3528328,46.0099127,54.5643516,53.9994829,42.3528328,53.9994829,46.0099127,46.0099127,46.0099127,53.9994829,24.5928742,42.3528328,53.9994829,42.3528328,42.3528328,46.0099127,53.9994829,53.9994829,46.0099127,42.3528328,47.8915271,46.0099127,42.3528328,46.0099127,57.0036901,47.8915271,46.0099127,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,53.9994829,-102.0077097,42.3528328,71.247499,42.3528328,49.083416,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,46.0099127,42.3528328,42.3528328,42.3528328,42.3528328,53.9994829,42.3528328,42.3528328,42.3528328,46.0099127,42.3528328,53.9994829,42.3528328,53.9994829,46.0099127,42.3528328,42.3528328,46.0099127,46.0099127,42.3528328,42.3528328,42.3528328,42.3528328,53.9994829,53.9994829,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,53.9994829,42.3528328,42.3528328,42.3528328,42.3528328,46.0099127,46.0099127,46.0099127,42.3528328,46.0099127,46.0099127,42.3528328,42.3528328,38.4313975,17.3231107,42.3528328,42.3528328,24.991639,17.3231107,42.3528328,46.0099127,42.3528328,71.247499,42.3528328,24.991639,42.3528328,42.3528328,46.0099127,46.0099127,46.0099127,42.3528328,42.3528328,46.0099127,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,46.0099127,42.3528328,42.3528328,46.0099127,46.0099127,42.3528328,42.3528328,46.0099127,46.0099127,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,17.3231107,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,42.3528328,46.0099127,42.3528328,42.3528328,42.3528328,42.3528328,46.0099127,46.0099127,42.3528328,42.3528328,42.3528328,42.3528328,46.0099127,24.991639,42.3528328,47.8915271,42.3528328,42.3528328,42.3528328,42.3528328],null,null,null,{"interactive":true,"draggable":false,"keyboard":true,"title":"","alt":"","zIndexOffset":0,"opacity":1,"riseOnHover":false,"riseOffset":250},["Spain","UAE","UAE","Namibia","Jordan","UAE","UAE","Saudi Arabia","UAE","Jordan","Namibia","Somaliland","Somaliland","Saudi Arabia","Somalia","Saudi Arabia","Somaliland","UAE","Saudi Arabia","Saudi Arabia","Kuwait","Somaliland","Saudi Arabia","Ethiopia","Saudi Arabia","Kenya","Tanzania","South Africa","Kenya","Somaliland","Somaliland","UAE","UAE","UAE","Somaliland","UAE","Somaliland","Saudi Arabia","UAE","Somaliland","UAE","Saudi Arabia","Somaliland","Somaliland","Kuwait","Saudi Arabia","Saudi Arabia","Somaliland","UAE","Somaliland","South Africa","Somaliland","UAE","Somaliland","Somaliland","Somaliland","South Africa","Somaliland","Somaliland","Somaliland","Egypt","UAE","UAE","Somaliland","UK","Greece","UAE","UAE","Iran","UAE","UAE","UAE","Somaliland","Somaliland","Kuwait","Somaliland","Somaliland","UAE","Saudi Arabia","Saudi Arabia","Egypt","UAE","Saudi Arabia","Somaliland","UAE","UAE","UAE","UAE","UAE","Yemen","UAE","UAE","UAE","Somalia","Botswana","UAE","UAE","UAE","UAE","UAE","Somaliland","Somaliland","UAE","UAE","UAE","Saudi Arabia","Djibouti","UAE","Somaliland","UAE","Kuwait","UAE","UAE","Kuwait","Saudi Arabia","Somaliland","Somaliland","Saudi Arabia","Saudi Arabia","Yemen","UAE","Kuwait","Saudi Arabia","Somaliland","Somaliland","Somaliland","Somaliland","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Kuwait","Kuwait","Kuwait","Saudi Arabia","UAE","UAE","Saudi Arabia","Somaliland","Kuwait","Kuwait","Saudi Arabia","Kuwait","Ethiopia","Somaliland","Saudi Arabia","Zimbabwe","Kuwait","Kuwait","Saudi Arabia","UAE","Kuwait","Namibia","UAE","UAE","Kuwait","UAE","Saudi Arabia","Ethiopia","Saudi Arabia","Kuwait","UAE","Saudi Arabia","Kuwait","Kuwait","Kuwait","Kuwait","Kuwait","Ethiopia","Ethiopia","Djibouti","Kuwait","Kuwait","Saudi Arabia","UAE","UAE","Kuwait","Kuwait","UAE","Ethiopia","Qatar","UAE","UAE","UAE","Kuwait","UAE","UAE","Saudi Arabia","Ethiopia","UAE","Kuwait","Saudi Arabia","Ethiopia","Qatar","Saudi Arabia","Ethiopia","Somaliland","Somaliland","Somaliland","Kuwait","Kuwait","Kuwait","Qatar","Ethiopia","Kuwait","UAE","Kuwait","Kuwait","UAE","Kuwait","Ethiopia","Kuwait","Kuwait","Kuwait","Kuwait","Kuwait","Kuwait","Kuwait","Qatar","Kuwait","Kuwait","Kuwait","Kuwait","UAE","Kuwait","Kuwait","Somaliland","Kuwait","Kuwait","Kuwait","Kuwait","Kuwait","Kuwait","Saudi Arabia","Saudi Arabia","Kuwait","Ethiopia","Kuwait","Kuwait","Saudi Arabia","Saudi Arabia","Kuwait","Saudi Arabia","Kuwait","Kuwait","Kuwait","Kuwait","Kuwait","Saudi Arabia","Kuwait","Kuwait","Namibia","Ethiopia","Qatar","Kuwait","Yemen","Kuwait","Kuwait","Kuwait","Kuwait","Saudi Arabia","Kuwait","Kuwait","Kuwait","Kuwait","Qatar","Kuwait","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Kuwait","Kuwait","Saudi Arabia","Saudi Arabia","Saudi Arabia","Somaliland","Saudi Arabia","Kuwait","UAE","Kuwait","Kuwait","Saudi Arabia","Somaliland","Kuwait","Saudi Arabia","Kuwait","Saudi Arabia","Saudi Arabia","Kuwait","Kuwait","Saudi Arabia","UAE","Saudi Arabia","Saudi Arabia","Saudi Arabia","Kuwait","Saudi Arabia","Saudi Arabia","Saudi Arabia","Ethiopia","UAE","Saudi Arabia","Kuwait","Qatar","Ethiopia","Saudi Arabia","Saudi Arabia","Saudi Arabia","UAE","Saudi Arabia","Saudi Arabia","Yemen","Saudi Arabia","UAE","UAE","Saudi Arabia","Saudi Arabia","UAE","Kuwait","Kuwait","Kuwait","UAE","Saudi Arabia","Kuwait","Saudi Arabia","UAE","Saudi Arabia","Kuwait","Saudi Arabia","Tanzania","Kuwait","Kuwait","UAE","UAE","Saudi Arabia","Saudi Arabia","Saudi Arabia","Kuwait","Kuwait","Kuwait","Saudi Arabia","UAE","Kuwait","Kuwait","UAE","Saudi Arabia","Kuwait","Somaliland","Somaliland","Somaliland","Somaliland","Saudi Arabia","Saudi Arabia","Saudi Arabia","UAE","UAE","Kuwait","Kuwait","Saudi Arabia","Saudi Arabia","UAE","UAE","Kuwait","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Ethiopia","South Africa","Saudi Arabia","Kuwait","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Somaliland","Saudi Arabia","UAE","Saudi Arabia","Qatar","UAE","Saudi Arabia","Saudi Arabia","Saudi Arabia","Kuwait","Kuwait","Yemen","Saudi Arabia","Saudi Arabia","Iraq","UAE","Armenia","UAE","Saudi Arabia","Kuwait","Kuwait","Saudi Arabia","Kuwait","Ethiopia","Saudi Arabia","Kuwait","Kuwait","Kuwait","Saudi Arabia","Saudi Arabia","UAE","Saudi Arabia","Saudi Arabia","UAE","Saudi Arabia","Saudi Arabia","Saudi Arabia","UAE","Somalia","Saudi Arabia","Saudi Arabia","Russia","Russia","Saudi Arabia","Egypt","UAE","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Qatar","Ethiopia","Saudi Arabia","Saudi Arabia","UAE","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Qatar","Bahrain","Saudi Arabia","Saudi Arabia","Saudi Arabia","Kuwait","Saudi Arabia","Saudi Arabia","Saudi Arabia","Russia","UAE","Saudi Arabia","Saudi Arabia","Saudi Arabia","Somaliland","Saudi Arabia","Saudi Arabia","Qatar","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Kuwait","UAE","South Africa","UAE","Saudi Arabia","Saudi Arabia","Saudi Arabia","Kuwait","Saudi Arabia","Yemen","Yemen","Yemen","Saudi Arabia","Kuwait","Saudi Arabia","Saudi Arabia","Kuwait","Saudi Arabia","Kuwait","Saudi Arabia","Kuwait","Kuwait","UAE","Ethiopia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Kuwait","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","UAE","Kuwait","Egypt","Egypt","Ethiopia","Somaliland","Kuwait","UAE","Saudi Arabia","Bahrain","Saudi Arabia","Kuwait","Kuwait","Kuwait","Kuwait","Kuwait","Saudi Arabia","UAE","UAE","Kuwait","Kuwait","Kuwait","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Kuwait","Saudi Arabia","Saudi Arabia","Saudi Arabia","UAE","Kuwait","Kuwait","Kuwait","Bahrain","Somaliland","Saudi Arabia","Saudi Arabia","Kuwait","Yemen","Saudi Arabia","Somaliland","Kuwait","Somaliland","Somaliland","Saudi Arabia","Saudi Arabia","UAE","Kuwait","Kuwait","Kuwait","Kuwait","Kuwait","Saudi Arabia","Kuwait","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Kuwait","Saudi Arabia","Kuwait","Kuwait","Saudi Arabia","Kuwait","UAE","Belarus","Saudi Arabia","Saudi Arabia","Kuwait","Kuwait","UAE","UAE","Saudi Arabia","Saudi Arabia","Bahrain","Kuwait","Somaliland","Kuwait","Saudi Arabia","Yemen","Saudi Arabia","Saudi Arabia","Saudi Arabia","Kuwait","Saudi Arabia","Saudi Arabia","Saudi Arabia","Ethiopia","Saudi Arabia","Saudi Arabia","Yemen","Saudi Arabia","Kuwait","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Kuwait","Saudi Arabia","Saudi Arabia","Kuwait","Saudi Arabia","Saudi Arabia","UAE","Saudi Arabia","Kuwait","Saudi Arabia","Kuwait","Qatar","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Kuwait","Kuwait","Saudi Arabia","Kuwait","Saudi Arabia","UAE","Egypt","Saudi Arabia","UAE","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Qatar","Saudi Arabia","Kuwait","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Kuwait","Saudi Arabia","Yemen","Yemen","Saudi Arabia","UAE","Saudi Arabia","UAE","UAE","Saudi Arabia","Saudi Arabia","Saudi Arabia","Kuwait","Saudi Arabia","Saudi Arabia","Kuwait","UAE","Qatar","Kuwait","Saudi Arabia","Qatar","Kuwait","Saudi Arabia","Kuwait","Yemen","Saudi Arabia","Somaliland","Saudi Arabia","Saudi Arabia","Kuwait","Qatar","Saudi Arabia","Kuwait","Kuwait","Saudi Arabia","Qatar","Saudi Arabia","Qatar","Yemen","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Somaliland","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Kuwait","Kuwait","Saudi Arabia","Saudi Arabia","Saudi Arabia","UAE","Kuwait","Saudi Arabia","Saudi Arabia","Kuwait","Somaliland","Saudi Arabia","Saudi Arabia","Saudi Arabia","Qatar","Saudi Arabia","Qatar","Saudi Arabia","Saudi Arabia","Saudi Arabia","Kuwait","Saudi Arabia","Saudi Arabia","Kuwait","Kuwait","Kuwait","Yemen","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Kuwait","Qatar","UAE","Qatar","Kuwait","Kuwait","Kuwait","Kuwait","Kuwait","Saudi Arabia","Saudi Arabia","Saudi Arabia","Yemen","Saudi Arabia","UAE","Kuwait","Saudi Arabia","Yemen","UAE","Saudi Arabia","Kuwait","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Somaliland","Saudi Arabia","UAE","Saudi Arabia","Saudi Arabia","Kuwait","Kuwait","Namibia","Saudi Arabia","Saudi Arabia","Kuwait","Qatar","Kuwait","Kuwait","Qatar","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Somaliland","Iran","Oman","Saudi Arabia","Yemen","Kuwait","Qatar","Russia","South Africa","UAE","Saudi Arabia","Uganda","UAE","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Kuwait","Saudi Arabia","Saudi Arabia","Saudi Arabia","UAE","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Qatar","Saudi Arabia","Saudi Arabia","Qatar","Saudi Arabia","Saudi Arabia","Qatar","Saudi Arabia","Saudi Arabia","Saudi Arabia","UAE","Saudi Arabia","Kuwait","UAE","Saudi Arabia","Qatar","Saudi Arabia","Yemen","Saudi Arabia","Qatar","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","UAE","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Kuwait","Saudi Arabia","Saudi Arabia","Somalia","Somalia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Qatar","Saudi Arabia","Saudi Arabia","Kuwait","Saudi Arabia","Saudi Arabia","Saudi Arabia","UAE","Saudi Arabia","Kuwait","Saudi Arabia","UAE","Kuwait","Somaliland","Saudi Arabia","Saudi Arabia","Saudi Arabia","UAE","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Kuwait","Kuwait","UAE","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Ethiopia","Saudi Arabia","Qatar","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Qatar","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","UAE","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Kuwait","Qatar","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Somaliland","Saudi Arabia","Qatar","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","UAE","UAE","Saudi Arabia","Saudi Arabia","Qatar","Saudi Arabia","Saudi Arabia","Saudi Arabia","Somalia","Saudi Arabia","Saudi Arabia","Kuwait","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Yemen","Qatar","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Pakistan","Saudi Arabia","UAE","Saudi Arabia","Kuwait","UAE","Saudi Arabia","Saudi Arabia","Kuwait","Ethiopia","Saudi Arabia","Qatar","Saudi Arabia","Saudi Arabia","Qatar","Saudi Arabia","UAE","Qatar","Kuwait","Kuwait","Somaliland","Qatar","Saudi Arabia","Qatar","Saudi Arabia","Saudi Arabia","UAE","UAE","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Kuwait","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Kuwait","UAE","Saudi Arabia","Qatar","Saudi Arabia","Mexico","Kuwait","Qatar","Qatar","Qatar","UAE","Saudi Arabia","Qatar","UAE","Saudi Arabia","UAE","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Kuwait","South Africa","South Africa","UAE","Qatar","Saudi Arabia","Saudi Arabia","Kuwait","Saudi Arabia","Saudi Arabia","Qatar","Saudi Arabia","Saudi Arabia","UAE","UAE","Somaliland","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","UAE","Qatar","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","UAE","UAE","Yemen","Saudi Arabia","Saudi Arabia","Saudi Arabia","Yemen","Qatar","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","UAE","UAE","Saudi Arabia","Saudi Arabia","Qatar","Somalia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Qatar","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Kuwait","Saudi Arabia","UAE","UAE","Saudi Arabia","Kuwait","UAE","UAE","Saudi Arabia","Saudi Arabia","Saudi Arabia","Kuwait","Kuwait","Qatar","Qatar","UAE","Saudi Arabia","Qatar","Saudi Arabia","Bahrain","Saudi Arabia","Qatar","Saudi Arabia","Saudi Arabia","Saudi Arabia","Kuwait","Kuwait","Kuwait","Saudi Arabia","Saudi Arabia","Saudi Arabia","UAE","Somalia","Saudi Arabia","UAE","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","South Africa","UAE","UAE","Yemen","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","UAE","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Somaliland","Saudi Arabia","Saudi Arabia","Saudi Arabia","UAE","Saudi Arabia","UAE","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","UAE","UAE","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Qatar","Saudi Arabia","UAE","UAE","Yemen","Somalia","South Africa","Saudi Arabia","Saudi Arabia","Saudi Arabia","UAE","Saudi Arabia","Saudi Arabia","Yemen","Saudi Arabia","Saudi Arabia","Saudi Arabia","Yemen","Saudi Arabia","Saudi Arabia","Saudi Arabia","UAE","Saudi Arabia","Qatar","Saudi Arabia","UAE","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","UAE","UAE","Saudi Arabia","Kuwait","Saudi Arabia","UAE","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","UAE","Saudi Arabia","Saudi Arabia","UAE","UAE","UAE","UAE","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","UAE","UAE","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","UAE","UAE","UAE","UAE","Qatar","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","UAE","Saudi Arabia","Saudi Arabia","Ethiopia","Somalia","Yemen","Saudi Arabia","Saudi Arabia","Saudi Arabia","Somaliland","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Bahrain","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","UAE","Qatar","Kuwait","Saudi Arabia","Saudi Arabia","UAE","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Ethiopia","Saudi Arabia","Ethiopia","Ethiopia","Ethiopia","Kuwait","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Somaliland","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","South Africa","Saudi Arabia","UAE","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Qatar","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Somaliland","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","UAE","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Qatar","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","UAE","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","UAE","Saudi Arabia","Indonesia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Egypt","Saudi Arabia","UAE","Saudi Arabia","Somalia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Somalia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Somalia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Qatar","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Somalia","Saudi Arabia","Saudi Arabia","Somalia","Saudi Arabia","Saudi Arabia","UAE","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Somaliland","Saudi Arabia","Saudi Arabia","Saudi Arabia","Ethiopia","Saudi Arabia","Somaliland","Saudi Arabia","Saudi Arabia","Somaliland","Saudi Arabia","Somaliland","Saudi Arabia","Saudi Arabia","Somaliland","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Oman","Somaliland","UAE","Saudi Arabia","Saudi Arabia","Qatar","Saudi Arabia","Somalia","Somalia","Saudi Arabia","Russia","Saudi Arabia","Saudi Arabia","UAE","Spain","Saudi Arabia","Somaliland","Somaliland","Saudi Arabia","Saudi Arabia","Somaliland","Yemen","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Qatar","Indonesia","UAE","UAE","Saudi Arabia","UAE","Somaliland","Somalia","UAE","Saudi Arabia","Somalia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Somalia","Somaliland","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Indonesia","Somalia","Saudi Arabia","Somaliland","Somaliland","Saudi Arabia","Saudi Arabia","Yemen","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Somaliland","Saudi Arabia","Yemen","Saudi Arabia","Saudi Arabia","UAE","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","UAE","UAE","Saudi Arabia","Somaliland","Somaliland","Saudi Arabia","Saudi Arabia","Yemen","Saudi Arabia","Saudi Arabia","Saudi Arabia","Kuwait","Somaliland","Somaliland","Namibia","Somaliland","Somaliland","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Pakistan","Saudi Arabia","Saudi Arabia","UAE","Saudi Arabia","Somaliland","Somaliland","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Ukraine","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Kuwait","UAE","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Somaliland","Somaliland","Saudi Arabia","Somaliland","Somaliland","Tanzania","Bahrain","Saudi Arabia","Bangladesh","Saudi Arabia","Somaliland","Saudi Arabia","Saudi Arabia","Saudi Arabia","Namibia","UAE","Saudi Arabia","Somaliland","Iran","UAE","Saudi Arabia","UAE","Somaliland","Somaliland","Somaliland","UAE","Botswana","Saudi Arabia","UAE","Saudi Arabia","Saudi Arabia","Somaliland","UAE","UAE","Somaliland","Saudi Arabia","Yemen","Somaliland","Saudi Arabia","Somaliland","Oman","Yemen","Somaliland","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","UAE","Mexico","Saudi Arabia","Pakistan","Saudi Arabia","Somalia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Somaliland","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","UAE","Saudi Arabia","Saudi Arabia","Saudi Arabia","Somaliland","Saudi Arabia","UAE","Saudi Arabia","UAE","Somaliland","Saudi Arabia","Saudi Arabia","Somaliland","Somaliland","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","UAE","UAE","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","UAE","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Somaliland","Somaliland","Somaliland","Saudi Arabia","Somaliland","Somaliland","Saudi Arabia","Saudi Arabia","Kenya","Namibia","Saudi Arabia","Saudi Arabia","South Africa","Namibia","Saudi Arabia","Somaliland","Saudi Arabia","Pakistan","Saudi Arabia","South Africa","Saudi Arabia","Saudi Arabia","Somaliland","Somaliland","Somaliland","Saudi Arabia","Saudi Arabia","Somaliland","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Somaliland","Saudi Arabia","Saudi Arabia","Somaliland","Somaliland","Saudi Arabia","Saudi Arabia","Somaliland","Somaliland","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Namibia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Somaliland","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Somaliland","Somaliland","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia","Somaliland","South Africa","Saudi Arabia","Yemen","Saudi Arabia","Saudi Arabia","Saudi Arabia","Saudi Arabia"],null,null,null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]}],"limits":{"lat":[-28.8166236,64.68631360000001],"lng":[-102.0077097,117.8902853]}},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+<p><br>
+I would like to use location to better understand how and what happened in these recorded illegal cheetah trade incidents. For example, I could bind this location data to different variables in the dataset to show spatially how many cheetahs were found in these countries.<br></p>
+<p>How many cheetahs were found throughout the years?</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="2025-07-08_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><br>
+This plot helped me see how many cheetahs were counted in all of the incidents recorded. I believe this can help me delve into questions such as:<br>
+&nbsp;</p>
+<ul>
+<li><p>How are illegal cheetah trade incidents changing in their locations, units, and incident types throughout the years?</p></li>
+<li><p>What are the most common incidents seen in the illegal cheetah trade?</p></li>
+</ul>
+
+
+<!-- -->
+
+</section></section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+    let newTheme = '';
+    if(darkModeDefault) {
+      newTheme = isAlternate ? baseTheme : alternateTheme;
+    } else {
+      newTheme = isAlternate ? alternateTheme : baseTheme;
+    }
+    const changeGiscusTheme = () => {
+      // From: https://github.com/giscus/giscus/issues/336
+      const sendMessage = (message) => {
+        const iframe = document.querySelector('iframe.giscus-frame');
+        if (!iframe) return;
+        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+      }
+      sendMessage({
+        setConfig: {
+          theme: newTheme
+        }
+      });
+    }
+    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+    if (isGiscussLoaded) {
+      changeGiscusTheme();
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  const darkModeDefault = false;
+  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+    toggleGiscusIfUsed(toAlternate, darkModeDefault);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+  const viewSource = window.document.getElementById('quarto-view-source') ||
+                     window.document.getElementById('quarto-code-tools-source');
+  if (viewSource) {
+    const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+    viewSource.addEventListener("click", function(e) {
+      if (sourceUrl) {
+        // rstudio viewer pane
+        if (/\bcapabilities=\b/.test(window.location)) {
+          window.open(sourceUrl);
+        } else {
+          window.location.href = sourceUrl;
+        }
+      } else {
+        const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+        modal.show();
+      }
+      return false;
+    });
+  }
+  function toggleCodeHandler(show) {
+    return function(e) {
+      const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
+      for (let i=0; i<detailsSrc.length; i++) {
+        const details = detailsSrc[i].parentElement;
+        if (show) {
+          details.open = true;
+        } else {
+          details.removeAttribute("open");
+        }
+      }
+      const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
+      const fromCls = show ? "hidden" : "unhidden";
+      const toCls = show ? "unhidden" : "hidden";
+      for (let i=0; i<cellCodeDivs.length; i++) {
+        const codeDiv = cellCodeDivs[i];
+        if (codeDiv.classList.contains(fromCls)) {
+          codeDiv.classList.remove(fromCls);
+          codeDiv.classList.add(toCls);
+        } 
+      }
+      return false;
+    }
+  }
+  const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+  if (hideAllCode) {
+    hideAllCode.addEventListener("click", toggleCodeHandler(false));
+  }
+  const showAllCode = window.document.getElementById("quarto-show-all-code");
+  if (showAllCode) {
+    showAllCode.addEventListener("click", toggleCodeHandler(true));
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+          // target, if specified
+          link.setAttribute("target", "_blank");
+          if (link.getAttribute("rel") === null) {
+            link.setAttribute("rel", "noopener");
+          }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script><nav class="page-navigation column-body"><div class="nav-page nav-page-previous">
+      <a href="../../src/pv/pv-01.html" class="pagination-link" aria-label="Professional Viz Sample">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">Professional Viz Sample</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../../src/tt/2025-07-15.html" class="pagination-link" aria-label="TidyTuesday Sample 2">
+        <span class="nav-page-text"><span class="chapter-title">TidyTuesday Sample 2</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="sourceCode" id="cb3" data-shortcodes="false"><pre class="sourceCode numberSource markdown number-lines code-with-copy"><code class="sourceCode markdown"><span id="cb3-1"><a href="#cb3-1"></a><span class="co">---</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a><span class="an">title:</span><span class="co"> "TidyTuesday Sample 1"</span></span>
+<span id="cb3-3"><a href="#cb3-3"></a><span class="co">---</span></span>
+<span id="cb3-4"><a href="#cb3-4"></a></span>
+<span id="cb3-5"><a href="#cb3-5"></a><span class="fu">## Global dataset for seized and non-intercepted illegal cheetah trade (Acinonyx jubatus) 2010–2019</span></span>
+<span id="cb3-6"><a href="#cb3-6"></a><span class="fu">### Variables</span></span>
+<span id="cb3-7"><a href="#cb3-7"></a><span class="in">```{r include = FALSE}</span></span>
+<span id="cb3-8"><a href="#cb3-8"></a><span class="in">library(readxl)</span></span>
+<span id="cb3-9"><a href="#cb3-9"></a><span class="in">data &lt;- read_excel("../../data/raw/Tricorache et al_Global trade dataset for cheetah.xlsx")</span></span>
+<span id="cb3-10"><a href="#cb3-10"></a><span class="in">```</span></span>
+<span id="cb3-11"><a href="#cb3-11"></a></span>
+<span id="cb3-12"><a href="#cb3-12"></a>The variables within this dataset include:</span>
+<span id="cb3-13"><a href="#cb3-13"></a><span class="ss">- </span>Incident No.; Assigned by researcher  </span>
+<span id="cb3-14"><a href="#cb3-14"></a><span class="ss">- </span>Incident Type; Animal Injury / Mortality / Welfare Possession/trade Seizure  </span>
+<span id="cb3-15"><a href="#cb3-15"></a><span class="ss">- </span>Incident Date; DD-MMM-YY, TOTALS  </span>
+<span id="cb3-16"><a href="#cb3-16"></a><span class="ss">- </span>Discovery Date; DD-MMM-YY (date when incident was discovered by researcher)  </span>
+<span id="cb3-17"><a href="#cb3-17"></a><span class="ss">- </span>Country Role; O = Origin T = Transit D = Destination  </span>
+<span id="cb3-18"><a href="#cb3-18"></a><span class="ss">- </span>Region  </span>
+<span id="cb3-19"><a href="#cb3-19"></a><span class="ss">- </span>Country  </span>
+<span id="cb3-20"><a href="#cb3-20"></a><span class="ss">- </span>City/Region  </span>
+<span id="cb3-21"><a href="#cb3-21"></a><span class="ss">- </span>Location Type; Unknown, Rural area, Border Crossing, Private Home, Airport, Farm, etc.  </span>
+<span id="cb3-22"><a href="#cb3-22"></a><span class="ss">- </span>Origin if known  </span>
+<span id="cb3-23"><a href="#cb3-23"></a><span class="ss">- </span>Transit if known  </span>
+<span id="cb3-24"><a href="#cb3-24"></a><span class="ss">- </span>Destination if known   </span>
+<span id="cb3-25"><a href="#cb3-25"></a><span class="ss">- </span>Report grading;   </span>
+<span id="cb3-26"><a href="#cb3-26"></a><span class="ss">- </span>Verif means; Photo and/or video, official records, source reliability, known sellers, image search.  </span>
+<span id="cb3-27"><a href="#cb3-27"></a><span class="ss">- </span>Ultimate Source Type; A = Official, B = Database, C = Primary, D = Secondary, E = Seller  </span>
+<span id="cb3-28"><a href="#cb3-28"></a><span class="ss">- </span>Ult.Verif.Source; E.g., photo, video, official records, site visit  </span>
+<span id="cb3-29"><a href="#cb3-29"></a><span class="ss">- </span>Ult.Source Reliability; A = always B = mostly C = fairly D = sometimes E = unreliable F = unknown  </span>
+<span id="cb3-30"><a href="#cb3-30"></a><span class="ss">- </span>Orig.Source Type; A = Original research B = Official C = Open source D = Direct Report  </span>
+<span id="cb3-31"><a href="#cb3-31"></a><span class="ss">- </span>Medium; e.g. Email, phone, report, database   </span>
+<span id="cb3-32"><a href="#cb3-32"></a><span class="ss">- </span>Original Source; Name or identifier  </span>
+<span id="cb3-33"><a href="#cb3-33"></a><span class="ss">- </span>Day    </span>
+<span id="cb3-34"><a href="#cb3-34"></a><span class="ss">- </span>Month   </span>
+<span id="cb3-35"><a href="#cb3-35"></a><span class="ss">- </span>Year   </span>
+<span id="cb3-36"><a href="#cb3-36"></a><span class="ss">- </span>Number of Cheetahs; If known and in full cheetah units.  </span>
+<span id="cb3-37"><a href="#cb3-37"></a><span class="ss">- </span>Units; Bushmeat, Claws, Head, Live, Other, Skin, Skin pieces, Skull, Stuffed, Teeth, Trophy  </span>
+<span id="cb3-38"><a href="#cb3-38"></a><span class="ss">- </span>Incident Description  </span>
+<span id="cb3-39"><a href="#cb3-39"></a><span class="ss">- </span>Confiscated; number of units  </span>
+<span id="cb3-40"><a href="#cb3-40"></a><span class="ss">- </span>Surrendered  </span>
+<span id="cb3-41"><a href="#cb3-41"></a><span class="ss">- </span>Alive; number of live units at or post confiscation  </span>
+<span id="cb3-42"><a href="#cb3-42"></a><span class="ss">- </span>Died; number of death units at or following confiscation if known  </span>
+<span id="cb3-43"><a href="#cb3-43"></a><span class="ss">- </span>LTF / UNK Fate; number of units lost to follow up or unknown fate  </span>
+<span id="cb3-44"><a href="#cb3-44"></a><span class="ss">- </span>Action Taken  </span>
+<span id="cb3-45"><a href="#cb3-45"></a><span class="ss">- </span>Outcome  </span>
+<span id="cb3-46"><a href="#cb3-46"></a><span class="ss">- </span>Detecting Agency  </span>
+<span id="cb3-47"><a href="#cb3-47"></a><span class="ss">- </span>POI Assigned ID  </span>
+<span id="cb3-48"><a href="#cb3-48"></a><span class="ss">- </span>Other info / URL  </span>
+<span id="cb3-49"><a href="#cb3-49"></a></span>
+<span id="cb3-52"><a href="#cb3-52"></a><span class="in">```{r}</span></span>
+<span id="cb3-53"><a href="#cb3-53"></a><span class="fu">str</span>(data)</span>
+<span id="cb3-54"><a href="#cb3-54"></a><span class="in">```</span></span>
+<span id="cb3-55"><a href="#cb3-55"></a><span class="fu">### Research Questions Development </span></span>
+<span id="cb3-56"><a href="#cb3-56"></a></span>
+<span id="cb3-57"><a href="#cb3-57"></a>Where were all live cheetahs found?</span>
+<span id="cb3-58"><a href="#cb3-58"></a><span class="in">```{r echo=FALSE}</span></span>
+<span id="cb3-59"><a href="#cb3-59"></a><span class="in">library(dplyr)</span></span>
+<span id="cb3-60"><a href="#cb3-60"></a><span class="in">library(tidyverse)</span></span>
+<span id="cb3-61"><a href="#cb3-61"></a><span class="in">library(janitor)</span></span>
+<span id="cb3-62"><a href="#cb3-62"></a><span class="in">library(leaflet)</span></span>
+<span id="cb3-63"><a href="#cb3-63"></a><span class="in">library(ggplot2)</span></span>
+<span id="cb3-64"><a href="#cb3-64"></a><span class="in">library(tidygeocoder)</span></span>
+<span id="cb3-65"><a href="#cb3-65"></a></span>
+<span id="cb3-66"><a href="#cb3-66"></a><span class="in">country &lt;- data %&gt;%</span></span>
+<span id="cb3-67"><a href="#cb3-67"></a><span class="in">  janitor::clean_names() %&gt;%</span></span>
+<span id="cb3-68"><a href="#cb3-68"></a><span class="in">  filter(units == "Live") %&gt;%</span></span>
+<span id="cb3-69"><a href="#cb3-69"></a><span class="in">  select(country) </span></span>
+<span id="cb3-70"><a href="#cb3-70"></a></span>
+<span id="cb3-71"><a href="#cb3-71"></a><span class="in">locations &lt;- country %&gt;%</span></span>
+<span id="cb3-72"><a href="#cb3-72"></a><span class="in">  geocode(country, method = "osm", lat = lat, long = lng)</span></span>
+<span id="cb3-73"><a href="#cb3-73"></a><span class="in">saveRDS(locations, "../../data/processed/locations.RDS")</span></span>
+<span id="cb3-74"><a href="#cb3-74"></a></span>
+<span id="cb3-75"><a href="#cb3-75"></a><span class="in">leaflet(locations) %&gt;%</span></span>
+<span id="cb3-76"><a href="#cb3-76"></a><span class="in">  addTiles() %&gt;%</span></span>
+<span id="cb3-77"><a href="#cb3-77"></a><span class="in">  addMarkers(~lng, ~lat, popup = ~country)</span></span>
+<span id="cb3-78"><a href="#cb3-78"></a><span class="in">```</span></span>
+<span id="cb3-79"><a href="#cb3-79"></a>\</span>
+<span id="cb3-80"><a href="#cb3-80"></a>I would like to use location to better understand how and what happened in these recorded illegal cheetah trade incidents. For example, I could bind this location data to different variables in the dataset to show spatially how many cheetahs were found in these countries. </span>
+<span id="cb3-81"><a href="#cb3-81"></a>\</span>
+<span id="cb3-82"><a href="#cb3-82"></a></span>
+<span id="cb3-83"><a href="#cb3-83"></a>How many cheetahs were found throughout the years?</span>
+<span id="cb3-84"><a href="#cb3-84"></a></span>
+<span id="cb3-85"><a href="#cb3-85"></a><span class="in">```{r echo=FALSE}</span></span>
+<span id="cb3-86"><a href="#cb3-86"></a><span class="in">data &lt;- data %&gt;%</span></span>
+<span id="cb3-87"><a href="#cb3-87"></a><span class="in">  clean_names() %&gt;%</span></span>
+<span id="cb3-88"><a href="#cb3-88"></a><span class="in">  slice(-c(1, 2)) </span></span>
+<span id="cb3-89"><a href="#cb3-89"></a></span>
+<span id="cb3-90"><a href="#cb3-90"></a><span class="in">data %&gt;%</span></span>
+<span id="cb3-91"><a href="#cb3-91"></a><span class="in">  group_by(year) %&gt;%</span></span>
+<span id="cb3-92"><a href="#cb3-92"></a><span class="in">  filter(!is.na(year)) %&gt;%</span></span>
+<span id="cb3-93"><a href="#cb3-93"></a><span class="in">  filter(number_cheetahs != "~") %&gt;%</span></span>
+<span id="cb3-94"><a href="#cb3-94"></a><span class="in">  filter(number_cheetahs != "UNK") %&gt;%</span></span>
+<span id="cb3-95"><a href="#cb3-95"></a><span class="in">  mutate(number_cheetahs = as.numeric(number_cheetahs)) %&gt;%</span></span>
+<span id="cb3-96"><a href="#cb3-96"></a><span class="in">  filter(year &gt;= 2010 &amp; year &lt;= 2019) %&gt;%</span></span>
+<span id="cb3-97"><a href="#cb3-97"></a><span class="in">  ggplot(aes(x = year, y = number_cheetahs)) +</span></span>
+<span id="cb3-98"><a href="#cb3-98"></a><span class="in">  geom_col() +</span></span>
+<span id="cb3-99"><a href="#cb3-99"></a><span class="in">  labs(</span></span>
+<span id="cb3-100"><a href="#cb3-100"></a><span class="in">    title = "Number of Cheetahs Through 2010-2019",</span></span>
+<span id="cb3-101"><a href="#cb3-101"></a><span class="in">    x = "Year",</span></span>
+<span id="cb3-102"><a href="#cb3-102"></a><span class="in">    y = "Number of Cheetahs"</span></span>
+<span id="cb3-103"><a href="#cb3-103"></a><span class="in">  )</span></span>
+<span id="cb3-104"><a href="#cb3-104"></a><span class="in">```</span></span>
+<span id="cb3-105"><a href="#cb3-105"></a></span>
+<span id="cb3-106"><a href="#cb3-106"></a>\</span>
+<span id="cb3-107"><a href="#cb3-107"></a>This plot helped me see how many cheetahs were counted in all of the incidents recorded. I believe this can help me delve into questions such as:  </span>
+<span id="cb3-108"><a href="#cb3-108"></a>\ </span>
+<span id="cb3-109"><a href="#cb3-109"></a>  </span>
+<span id="cb3-110"><a href="#cb3-110"></a><span class="ss">* </span>How are illegal cheetah trade incidents changing in their locations, units, and incident types throughout the years?  </span>
+<span id="cb3-111"><a href="#cb3-111"></a></span>
+<span id="cb3-112"><a href="#cb3-112"></a><span class="ss">* </span>What are the most common incidents seen in the illegal cheetah trade?  </span>
+<span id="cb3-113"><a href="#cb3-113"></a></span>
+<span id="cb3-114"><a href="#cb3-114"></a></span>
+</code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
+</div></div></div></div></div>
+</div> <!-- /content -->
+<footer class="footer"><div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+
+<div class="cookie-consent-footer"><a href="#" id="open_preferences_center">Cookie Preferences</a></div></div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+<script src="../../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>
