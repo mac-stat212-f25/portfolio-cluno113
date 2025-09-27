@@ -2,6 +2,8 @@
 title: "Claire's Exam 1"
 format: html
 ---
+## About The Deep Dive
+I decided to follow Nick Paul's Blog on the internet to learn how he approaches the process to creating a compelling data story. This blog recreates NYT's COVID Tracker visualization which I looked at daily during the peak COVID epidemic. I highly enjoyed being able to understand the new labeling and data wrangling mechanisms that were introduced through this blog. It will certainly help me with activities in class that ask me to recreate this advanced visualizations.
 
 ```{r}
 library(dplyr)
@@ -10,8 +12,13 @@ library(ggplot2)
 ```
 
 ```{r}
+# Reading from github dataset
 url <- "https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv"
+
+# readr::read_csv
 df_states <- readr::read_csv(url)
+
+# glimpse dplyr function
 glimpse(df_states)
 ```
 ```{r}
@@ -26,7 +33,9 @@ df_ny_raw %>%
     ggplot(aes(x = date, y = cases)) +
     geom_line()
 
-# Lag function takes the difference between the current date and the previous date
+# The cases column has the cumulative cases up to that date.
+# Lag function takes the difference between the current date and the previous date.
+# = works in the same way as <- 
 df_ny = df_ny_raw %>% 
     mutate(cases = cases - lag(cases,
                                default = 0))
@@ -37,7 +46,7 @@ df_ny %>%
 ```
 ```{r}
 # For day-to-day variability, sum the case counts from the current day and the previous 6 days and  
-# divide by 7
+# divide by 7 for days of week
 
 df_ny_smooth = df_ny %>% 
     mutate(smooth = sum(cases, 
@@ -112,7 +121,7 @@ plot_nyt
 ```
 
 ```{r}
-# Creating labels
+# Creating label for the 7 day average; median of smooth dataframe
 max_date = df_ny$date %>% median() + 60
 min_date = df_ny$date %>% median() - 60
 
@@ -136,6 +145,18 @@ plot_nyt +
              yend = label_vals$smooth * 1.2,
              size = .25) 
 ```
+
+
+
+## Things I learned  
+I learned about dplyr function lag that takes a column that generates numbers cumulatively into one that subtracts previous values from the current one creating a day by day value. 
+\
+I also learned about how to create a loop in R studio to clean data. axis.text.y = element_text(angle = 0, vjust = -.5,  margin = margin(r = -30)) would've been helpful to know when I was doing hw2. The axis. functions were new to me and showed me how I can change labeling in ggplot.
+\
+extended_breaks() function from the scales package to automatically generate "nice" breaks (tick marks) for the y-axis based on the smooth column from the df_ny_smooth data frame.
+\
+breaks[2:length(breaks)] removes the first break value, typically 0. This is done to avoid a tick at 0 on the y-axis if it's redundant or visually unhelpful.
+
 
 
 

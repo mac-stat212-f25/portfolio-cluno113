@@ -74,6 +74,12 @@ book:
       - src/ica/ica-sample1.qmd
       - src/ica/ica-sample2.qmd
 
+    - part: "Exam 1"
+      chapters:
+        -  src/exam/exam1.qmd
+        -  src/exam/nyt_viz.qmd
+        -  src/exam/cp1.qmd
+
   appendices:
   - src/appx/appx-sample1.qmd
   - src/appx/appx-sample2.qmd
