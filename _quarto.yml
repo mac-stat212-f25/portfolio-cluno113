@@ -22,7 +22,7 @@ number-depth: 2
 
 book:
   title: "COMP/STAT212 Portfolio"
-  author: "Your Name Here"
+  author: "Claire Kuno"
   date: today  # use today to update date published based on last time project was edited
   date-format: full
   # favicon: path/to/favorite-logo.png
@@ -45,7 +45,7 @@ book:
       # footer text
 
   sidebar:
-    title: "Your Name Here"
+    title: "Claire Kuno"
     logo: assets/sidebar-logo.png
     logo-alt: "Random negative space illustration"
     collapse-level: 2
@@ -73,6 +73,10 @@ book:
       chapters:
       - src/ica/ica-sample1.qmd
       - src/ica/ica-sample2.qmd
+      - src/ica/04_adv_maps/code/04-adv-maps-1-notes.qmd
+      - src/ica/06_adv_data_wrangling_p1/06-wrangling-1-notes.qmd
+      - src/ica/09-functions-notes.qmd
+      - src/ica/10-base-r-notes.qmd
 
     - part: "Exam 1"
       chapters:

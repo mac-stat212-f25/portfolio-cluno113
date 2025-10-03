@@ -99,8 +99,8 @@ seven_countyarea <- mn_counties |>
 #sf version: 1.0-19
 #elevatr version: 0.99.0
 
-elevation <- elevatr::get_elev_raster(mn_counties |> st_crop(seven_countyarea), z = 9, clip = "bbox")
-raster::crs(elevation) <- sf::st_crs(mn_counties)
+# elevation <- elevatr::get_elev_raster(mn_counties |> st_crop(seven_countyarea), z = 9, clip = "bbox")
+# raster::crs(elevation) <- sf::st_crs(mn_counties)
 
 # Convert to data frame for plotting
 elev_df <- elevation |> terra::as.data.frame(xy = TRUE)
@@ -108,7 +108,8 @@ elev_df <- elevation |> terra::as.data.frame(xy = TRUE)
 colnames(elev_df) <- c("x", "y", "elevation")
 
 png("../figures/twin_cities_population.png", width = 800, height = 400)
-ggplot() +
+
+twin_cities_population <- ggplot() +
     geom_raster(data = elev_df, aes(x = x, y = y, fill = elevation)) + 
     geom_sf(data = mn_counties, fill = NA, color = "black") + # county boundary layer
     geom_sf(data = mn_water, fill = "lightsteelblue1", color = "lightsteelblue1") + # NEW: river/lake layer
