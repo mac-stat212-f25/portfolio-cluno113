@@ -85,16 +85,16 @@ ggplot() +
 
 ```{r}
  # Elevation Raster
-elevation <- elevatr::get_elev_raster(mn_counties, z = 5, clip = "bbox")
-raster::crs(elevation) <- sf::st_crs(mn_counties)
+# elevation <- elevatr::get_elev_raster(mn_counties, z = 5, clip = "bbox")
+# raster::crs(elevation) <- sf::st_crs(mn_counties)
 
 # Convert to data frame for plotting
-elev_df <- elevation |> terra::as.data.frame(xy = TRUE)
-colnames(elev_df) <- c("x", "y", "elevation")
+# elev_df <- elevation |> terra::as.data.frame(xy = TRUE)
+# colnames(elev_df) <- c("x", "y", "elevation")
 
-seven_countyarea <- mn_counties |>
-    filter(name %in% c("Anoka", "Hennepin", "Ramsey", "Dakota", "Carver", "Washington", "Scott")) |> 
-    st_bbox()
+# seven_countyarea <- mn_counties |>
+#     filter(name %in% c("Anoka", "Hennepin", "Ramsey", "Dakota", "Carver", "Washington", "Scott")) |> 
+#     st_bbox()
 
 #sf version: 1.0-19
 #elevatr version: 0.99.0
@@ -103,11 +103,11 @@ seven_countyarea <- mn_counties |>
 # raster::crs(elevation) <- sf::st_crs(mn_counties)
 
 # Convert to data frame for plotting
-elev_df <- elevation |> terra::as.data.frame(xy = TRUE)
+# elev_df <- elevation |> terra::as.data.frame(xy = TRUE)
 
-colnames(elev_df) <- c("x", "y", "elevation")
+# colnames(elev_df) <- c("x", "y", "elevation")
 
-png("../figures/twin_cities_population.png", width = 800, height = 400)
+# png("../figures/twin_cities_population.png", width = 800, height = 400)
 
 twin_cities_population <- ggplot() +
     geom_raster(data = elev_df, aes(x = x, y = y, fill = elevation)) + 
@@ -120,6 +120,7 @@ twin_cities_population <- ggplot() +
     labs(title = "Twin Cities with Population >= 10,000") + 
     ggthemes::theme_map() +
     theme(legend.position = "none") # remove legend
+
 dev.off()
 
 ```

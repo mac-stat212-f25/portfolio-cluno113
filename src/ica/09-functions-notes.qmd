@@ -42,7 +42,6 @@ When you define a function, what does it look like?
 
 ```{r eval = FALSE}
 library(dplyr)
-library()
 # Defining a function
 function_name <- function(input_name_1, input_name_2 = default_value_2){
 
@@ -97,8 +96,8 @@ When a function has default values for arguments, they don't have to be provided
 
 ```{r error = TRUE}
 # Does throw an error
-average(c(1, 2, 3, NA))
-average(c(1, 2, 3, NA), remove_nas = TRUE)
+# average(c(1, 2, 3, NA))
+# average(c(1, 2, 3, NA), remove_nas = TRUE)
 
 # Doesn't throw an error
 average2(c(1, 2, 3, NA))
