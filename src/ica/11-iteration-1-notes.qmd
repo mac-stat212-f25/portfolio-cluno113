@@ -56,9 +56,9 @@ In R, `for` loops have the following general structure:
 ```{r for_syntax}
 #| eval: false
 
-for (i in some_vector) {
-    # Code to do stuff based on i
-}
+# for (i in some_vector) {
+#     # Code to do stuff based on i
+# }
 ```
 
 
@@ -112,6 +112,7 @@ for (i in seq_along(no_groups)) {
 `seq_len()` is useful for iterating over the rows of a data frame because `seq_along()` would iterate over columns:
 
 ```{r seq_len_df}
+library(tibble)
 small_data <- tibble(a = 1:2, b = 2:3, c = 4:5)
 
 for (col in small_data) { # each element is the column 
@@ -131,6 +132,8 @@ When using a for loop to create/save output, we should create storage containers
 :::
 
 ```{r store_results}
+library(dplyr)
+library(stringr)
 char_storage <- vector("character", length = 3)
 num_storage <- vector("numeric", length = 3)
 list_storage <- vector("list", length = 3)
@@ -193,9 +196,12 @@ Write `for`-loops that do each of the following:
 ```{r}    
 # for loop
 
-
+for (i in seq_len(10)) {
+    print(2*i)
+}
 
 # vectorized approach with `seq()`
+seq(from = 2, to = 20, by = 2)
 
 ```
     
@@ -203,21 +209,36 @@ Write `for`-loops that do each of the following:
     - Then, produce the same output with `str_c()` only.
     
 ```{r}    
+month_strings <- vector("character", length = length(month.name))
+
 # for loop
+for (i in seq_along(month.name)) {
+  month_strings[i] <- str_c("Month ", i, ": ", month.name)
+}
 
-
+month_strings
 
 # vectorized approach with `str_c()`
+str_c("Month ", 1:12, ": ", month.name)
 ```
 
 3. On the `diamonds` dataset, fit stratified models of price vs. carat, model separately estimated for each value of `cut`, and store the fitted models in a list storage container.
 
-```{r}    
+```{r}  
+library(ggplot2)
+data(diamonds)
+
+unique_cut <- diamonds %>% pull(cut) %>% levels()
+lin_mod_results <- vector(mode = "list", length = length(unique_cut))
 # for loop
+for (i in seq_along(unique_cut)) {
+  this_cut <- unique_cut[i]
+  diamonds_sub <- diamonds %>% 
+    filter(cut == this_cut)
+  lin_mod_results[[i]] <- lm(price~carat, data = diamonds_sub)
+}
 
-
-
-
+lin_mod_results
 ```
 
 
@@ -298,14 +319,22 @@ Using the `diamonds` dataset:
 1. Transform the `x`, `y`, and `z` columns so that the units of millimeters are displayed (e.g., "4.0 mm").
 
 ```{r}
-
+df_arg_combos <- crossing(
+    mod_formula = c(price ~ carat, price ~ carat + cut,  price ~ carat + cut + clarity,  price ~ carat + cut + clarity + color),
+    remove_outliers = c(TRUE, FALSE)
+)
+df_arg_combos
 ```
 
 2. Convert all numeric columns into character columns.
     - Hint: type `is.` and hit Tab in the Console. Scroll through the function options. Do the same with `as.`
 
 ```{r}
-
+remove_outliers <- function(data, what_var, sd_thresh) {
+    data |> 
+        mutate(zscore = ({{ what_var }} - mean({{ what_var }}, na.rm = TRUE))/sd({{ what_var }}, na.rm = TRUE)) |>
+        filter(zscore <= sd_thresh)
+}
 ```
 
 
@@ -389,7 +418,15 @@ Work with your partner on the following exercises. As you work, make note of wha
 2. Write a function called `remove_outliers` that removes outliers in a dataset. The user should be able to supply the dataset (`data`), the variable to remove outliers in (`what_var`), and a threshold on the number of SDs away from the mean used to define outliers (`sd_thresh`). Write your function so that it runs as follows: `remove_outliers(diamonds, what_var = carat, sd_thresh = 3)`.
 
 ```{r}
-
+fit_model <- function(data, mod_formula, remove_outliers) {
+    if (remove_outliers) {
+        data_clean <- remove_outliers(data, what_var = carat, sd_thresh = 3)
+    } else {
+        data_clean <- data
+    }
+    
+    lm(mod_formula, data = data_clean)
+}
 ```
 
 3. Write a function called `fit_model` that implements the different settings for our `diamonds` analysis.
@@ -420,7 +457,17 @@ Note that in `df_arg_combos`:
 - `remove_outliers`: this column is a **vector** and you can extract the 1st element with `[1]`
 
 ```{r}
+lin_mod_res_for <- vector(mode = "list", length = nrow(df_arg_combos))
 
+for (i in seq_along(lin_mod_res_for)) {
+    this_formula <- df_arg_combos$mod_formula[[i]] # Double [[ for the **list** of formulas
+    this_remove_outliers <- df_arg_combos$remove_outliers[i] # Single [ for the **atomic vector** of logicals
+    lin_mod_res_for[[i]] <- fit_model(
+        data = diamonds,
+        mod_formula = this_formula,
+        remove_outliers = this_remove_outliers
+    )
+}
 ```
 ## Done!
 
