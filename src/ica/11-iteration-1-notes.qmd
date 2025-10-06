@@ -1,0 +1,428 @@
+---
+title: "11 Loops+Iter P1"
+---
+
+
+## 🧩 Learning Goals
+
+By the end of this lesson, you should be able to:
+
+- Write a `for` loop in R to handle repeated tasks
+    - Use `seq_along()` and `seq_len()` to iterate over vectors or rows of a data frame
+    - Store output from a `for` loop in a list or other storage container
+- Recognize that vectorized functions help us avoid `for` loops in many situations
+- Use the `across()` function to wrangle multiple variables simultaneously
+
+
+## Iteration 
+
+When we want to reuse code, we can use:
+
+- functions to save the steps of the task
+- iteration to apply that function to new inputs
+
+
+Let's talk about iteration in R.
+
+- Iterating using a `for` loop & how to do it appropriately in R (today)
+- Iterating `across` data frame columns (today)
+- Iterating using `map` and `walk` for iteration, instead of a `for` loop (next class)
+
+
+## Purposes of Iteration 
+
+**Creating or saving a new object**
+
+- Performing an action with a return output
+- Ex. creating new variables/datasets, fitting models, etc.
+- We'll need to consider storage (memory allocation).
+- Next class, we'll use `map()` for this...
+
+
+**Side effects**
+
+- Performing an action without a R return output
+- Ex: saving data using `write_csv()` or saving a plot with `png()`
+- We don't need to worry about storage in R.
+- We could use `walk()` for this...
+
+
+
+
+## `for` loops 
+
+In R, `for` loops have the following general structure:
+
+```{r for_syntax}
+#| eval: false
+
+for (i in some_vector) {
+    # Code to do stuff based on i
+}
+```
+
+
+`some_vector` can be **any** vector, including:
+
+- An **indexing** integer vector: `1:3` [Most common!]
+- A character vector: `c("group1", "group2", "group3")`
+- A vector of any other class
+
+```{r for_examples}
+groups <- c("group1", "group2", "group3") # a vector to iterate over
+ 
+for (i in 1:3) { # i: index
+    print(groups[i])
+}
+
+for (g in groups) { # iterating over the vector
+    print(g)
+}
+```
+
+
+To iterate over an **indexing** vector, it is useful to know about the following two functions:
+
+- `seq_along(v)`: generates an integer sequence from 1 to the length of the vector `v` supplied
+- `seq_len(n)`:  generates an integer sequence from 1 to `n`
+
+
+```{r for_seq_along}
+for (i in seq_along(groups)) {
+    print(groups[i])
+}
+
+for (i in seq_len(length(groups))) {
+    print(groups[i])
+}
+```
+
+
+A nice feature of `seq_along()` is that it generates an empty iteration vector if the vector you're iterating over itself has length 0.
+
+```{r}
+no_groups <- c()
+seq_along(no_groups)
+for (i in seq_along(no_groups)) {
+    print(no_groups[i])
+}
+```
+
+
+`seq_len()` is useful for iterating over the rows of a data frame because `seq_along()` would iterate over columns:
+
+```{r seq_len_df}
+small_data <- tibble(a = 1:2, b = 2:3, c = 4:5)
+
+for (col in small_data) { # each element is the column 
+    print(col)
+}
+
+for (r in seq_len(nrow(small_data))) {
+    print(r)
+}
+```
+
+
+**Indexing** is particularly important when we want to create/save new objects as we need to store output created during a `for` loop. 
+
+::: {.callout-tip appearance='simple' icon=false}
+When using a for loop to create/save output, we should create storage containers ahead of time with the `vector()` function. This allocates memory for the output and is a more efficient use of memory. 
+:::
+
+```{r store_results}
+char_storage <- vector("character", length = 3)
+num_storage <- vector("numeric", length = 3)
+list_storage <- vector("list", length = 3)
+
+char_storage
+num_storage
+list_storage
+
+for (i in seq_len(3)) {
+    char_storage[i] <- str_c("Number: ", i)
+    num_storage[i] <- 2*i
+    list_storage[[i]] <- i # Note the [[ for subsetting here
+}
+
+char_storage
+num_storage
+list_storage
+```
+
+### `for` loops and memory allocation   
+
+If you don't create a storage container ahead of time, you will regret it. Let's bench mark our code to see the difference!
+
+```{r}
+# Example 1: No storage container; append new value to existing vector
+x <- integer()
+bench::mark(
+  for (i in 1:1e5) {
+    x <- c(x, i)
+  }
+)
+
+# Example 2: Using a storage container!
+#Notice median (time to run), mem_alloc (how much memory you are using), and gc (garbage collection)
+x <- vector('integer', length = 1e5)
+bench::mark(
+  for (i in 1:1e5) {
+    x[i] <- i
+  }
+)
+
+
+# Example 3: Vectorized function
+#Notice median (time to run), mem_alloc (how much memory you are using), and gc (garbage collection)
+bench::mark(
+  x <- seq(1, 1e5, by = 1)
+)
+
+```
+
+## Exercises 
+
+**Pair programming exercises:** Whoever has most recently eaten dessert (broadly interpreted) should be the driver first. Switch after Exercise 2.
+
+Write `for`-loops that do each of the following:
+
+1. Prints the even numbers from 2:20
+    - Then, produce the same output with the `seq()` function
+    
+```{r}    
+# for loop
+
+
+
+# vectorized approach with `seq()`
+
+```
+    
+2. Iterates over the `month.name` vector and stores a character vector of output containing strings like "Month 1: January", "Month 2: February".
+    - Then, produce the same output with `str_c()` only.
+    
+```{r}    
+# for loop
+
+
+
+# vectorized approach with `str_c()`
+```
+
+3. On the `diamonds` dataset, fit stratified models of price vs. carat, model separately estimated for each value of `cut`, and store the fitted models in a list storage container.
+
+```{r}    
+# for loop
+
+
+
+
+```
+
+
+
+
+## Iteration `across` data frame columns 
+
+Often we will have to perform the same data wrangling on many variables (e.g., rounding numbers)
+
+```{r no_across}
+diamonds |>
+    mutate(
+        carat = round(carat, 1),
+        x = round(x, 1),
+        y = round(y, 1),
+        z = round(z, 1)
+    )
+```
+
+`dplyr` provides the `across()` function for performing these repeated function calls:
+
+```{r with_across}
+# Option 1: Create our own named function
+round_to_one <- function(x) {
+    round(x, digits = 1)
+}
+diamonds |> 
+    mutate(across(.cols = c(carat, x, y, z), .fns = round_to_one))
+```
+
+```{r}
+# Option 2: Use an "anonymous" or "lambda" function that isn't named/saved
+diamonds |> 
+    mutate(across(.cols = c(carat, x, y, z), .fns = function(x) {round(x, digits = 1)} ))
+
+
+# Anonymous functions can be written in a more concise way
+# function(x){ length(unique(x)) } OR ~ length(unique(.x))
+# function(x,y){ length(unique(x + y)) } OR ~ length(unique(.x + .y))
+```
+
+
+
+When we look at the [documentation for `across()`](https://dplyr.tidyverse.org/reference/across.html), we see that the `.cols` argument specifies which variables we want to transform, and it has a `<tidy-select>` tag. This means that the syntax we use for `.cols` follows certain rules. 
+
+Let's click [this link](https://dplyr.tidyverse.org/reference/dplyr_tidy_select.html) to explore the possibilities for selecting variables.
+
+- Read through the "Overview of selection features" section to get an overall sense of the many ways to select variables.
+- Navigate back to the `across()` documentation and read through the Examples section at the bottom. Click the "Run examples" link to view the output for all of the examples.
+
+
+
+What if we wanted to perform multiple transformations on each of many variables? 
+
+
+Within the different values of diamond `cut`, let's summarize the mean, median, and standard deviation of the numeric variables. When we look at the `.fns` argument in the `across()` documentation, we see that we can provide a **list** of functions:
+
+```{r across_many_fns}
+diamonds |>
+    group_by(cut) |> 
+    summarize(across(.cols = where(is.numeric), .fns = list(mean = mean, med = median, sd = sd)))
+```
+
+What does the list of functions look like? What is the structure of this list object?
+
+```{r list_str}
+list_of_fcts <- list(mean = mean, med = median, sd = sd)
+list_of_fcts
+str(list_of_fcts)
+```
+
+
+
+## Exercises 
+
+Using the `diamonds` dataset:
+
+1. Transform the `x`, `y`, and `z` columns so that the units of millimeters are displayed (e.g., "4.0 mm").
+
+```{r}
+
+```
+
+2. Convert all numeric columns into character columns.
+    - Hint: type `is.` and hit Tab in the Console. Scroll through the function options. Do the same with `as.`
+
+```{r}
+
+```
+
+
+
+
+## Case study: performing many different versions of an analysis 
+
+One of my most common use cases for writing functions and iteration/looping is to perform some exploration or modeling repeatedly for several different "settings". 
+
+For example, our broad goal might be to fit a linear regression model to our data. However, there are often multiple choices that we have to make in practice:
+
+- Keep missing values or fill them in (imputation)?
+- Fit the model only on a certain group of cases?
+- Filter out outliers in one or more variables?
+- Transform certain variables? (e.g., log transformation)
+
+
+We can map any number of these choices to **arguments** in a custom model-fitting function:
+
+- `impute`: TRUE or FALSE
+- `filter_to`: This could be a string description like "All cases", "Group 1", or "Groups 1 and 2"
+
+```{r fit_model_example}
+fit_model <- function(data, impute, filter_to) {
+    if (impute) {
+        data <- some_imputation_function(data)
+    }
+    
+    if (filter_to=="Group 1") {
+        data <- data |> 
+            filter(group == 1)
+    } else if (filter_to == "Groups 1 and 2") {
+        data <- data |> 
+            filter(group %in% c(1,2))
+    }
+    
+    lm(y ~ x1 + x2, data = data)
+}
+```
+
+The `tidyr` package has a useful function called `crossing()` that is useful for generating argument combinations. 
+
+For each argument, we specify all possible values for that argument. `crossing()` generates all combinations:
+
+```{r}
+df_arg_combos <- crossing(
+    impute = c(TRUE, FALSE),
+    filter_to = c("All cases", "Group 1", "Groups 1 and 2")
+)
+df_arg_combos
+
+# Another example
+crossing(
+    option1 = 1:3,
+    option2 = c(TRUE, FALSE),
+    option3 = c("low", "medium", "high")
+)
+```
+
+With iteration in our toobox, we can iterate the `fit_model()` function over the combinations in `df_arg_combos`.
+
+## Exercises 
+
+**Goal:** In the `diamonds` dataset, we want to understand the relationship between `price` and size (`carat`). We want to explore variation along two choices:
+
+- The variables included in the model. We'll explore 3 sets of variables:
+    - No further variables (just `price` and `carat`)
+    - Adjusting for `cut`
+    - Adjusting for `cut` and `clarity`
+    - Adjusting for `cut`, `clarity`, and `color`
+- Whether or not to remove outliers in the `carat` variable. We'll define outliers as cases whose `carat` is over 3 SDs away from the mean.
+
+Work with your partner on the following exercises. As you work, make note of what is challenging and any helpful thought processes/strategies that arise from the collaboration.
+
+1. Use `crossing()` to create the data frame of argument combinations for our analyses. Call it `df_arg_combos`. Note that you can create a list of **formula** objects in R with `c(y ~ x1, y ~ x1 + x2)`. (Something like this will be the right hand side of an argument to `crossing()`.)
+
+```{r}
+
+```
+
+2. Write a function called `remove_outliers` that removes outliers in a dataset. The user should be able to supply the dataset (`data`), the variable to remove outliers in (`what_var`), and a threshold on the number of SDs away from the mean used to define outliers (`sd_thresh`). Write your function so that it runs as follows: `remove_outliers(diamonds, what_var = carat, sd_thresh = 3)`.
+
+```{r}
+
+```
+
+3. Write a function called `fit_model` that implements the different settings for our `diamonds` analysis.
+
+```{r eval=FALSE}
+fit_model <- function(data, mod_formula, remove_outliers) {
+    # remove_outliers is a TRUE/FALSE flag of whether or not to remove outliers
+    # This function implements our specific use case: outliers are cases that are 3 SDs away from the mean for the carat variable
+    
+    # Use mod_formula as the first argument of lm()
+}
+```
+
+
+
+
+4. Write a `for` loop that stores the fitted linear models from all versions of the analysis.
+
+Recall that you can pull out the contents of a single data frame column in many ways. For a data frame `df` with a variable named `x`:
+
+- `df$x`
+- `df |> pull(x)`
+- `df[["x"]]`
+
+Note that in `df_arg_combos`:
+
+- `mod_formula`: this column is a **list** and you can extract the 1st element with `[[1]]`
+- `remove_outliers`: this column is a **vector** and you can extract the 1st element with `[1]`
+
+```{r}
+
+```
+## Done!
+
+- Check the ICA Instructions for how to (a) push your code to GitHub and (b) update your portfolio website
+

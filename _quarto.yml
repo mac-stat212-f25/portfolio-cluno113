@@ -77,6 +77,7 @@ book:
       - src/ica/06_adv_data_wrangling_p1/06-wrangling-1-notes.qmd
       - src/ica/09-functions-notes.qmd
       - src/ica/10-base-r-notes.qmd
+      - src/ica/11-iteration-1-notes.qmd
 
     - part: "Exam 1"
       chapters:
