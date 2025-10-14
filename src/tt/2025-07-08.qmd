@@ -1,5 +1,5 @@
 ---
-title: "TidyTuesday Sample 1"
+title: "Illegal Cheetah Trade"
 ---
 
 ## Global dataset for seized and non-intercepted illegal cheetah trade (Acinonyx jubatus) 2010–2019

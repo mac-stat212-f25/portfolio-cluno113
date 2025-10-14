@@ -1,5 +1,55 @@
 ---
-title: "TidyTuesday Sample 2"
+title: "Cranes Sightings in Sweden"
 ---
 
-Add content here
+```{r include = FALSE}
+# Using R
+# Option 1: tidytuesdayR R package 
+# install.packages("tidytuesdayR")
+
+tuesdata <- tidytuesdayR::tt_load('2025-09-30')
+## OR
+tuesdata <- tidytuesdayR::tt_load(2025, week = 39)
+
+cranes <- tuesdata$cranes
+
+# Option 2: Read directly from GitHub
+
+cranes <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2025/2025-09-30/cranes.csv')
+```
+
+```{r}
+library(dplyr)
+library(lubridate)
+
+cranes$date <- ymd(cranes$date)
+cranes$month <- month(cranes$date, label = TRUE)
+cranes$day <- day(cranes$date)
+cranes$year <- year(cranes$date)
+cranes$day_of_year <- yday(cranes$date)
+```
+
+```{r}
+library(ggplot2)
+line <- cranes |> 
+  filter(!is.na(observations)) |> 
+  group_by(month) |> 
+  summarize(observations = mean(observations)) |> 
+  mutate(month = factor(month, level = month.abb))
+
+ggplot(line, aes(x = month, y = observations)) +
+  geom_col() +
+  labs(title = "Total Mean Observations by Month")
+```
+
+```{r}
+ggplot(cranes, aes(x = date)) +
+  geom_point(aes(y = observations, color = weather_disruption), size = 3, na.rm = TRUE) +
+  labs(title = "Observations and Weather Disruptions",
+       y = "Observations", color = "Weather Disruption")
+
+cranes |> 
+  filter(weather_disruption == TRUE) |> 
+  count()
+```
+
