@@ -1,0 +1,466 @@
+---
+title: "14 APIs P2"
+---
+
+
+## 🧩 Learning Goals
+
+By the end of this lesson, you should be able to:
+
+After this lesson, you should be able to:
+
+- Explain what an API is
+- Set up an API key for a public API
+- Develop comfort in using a URL-method of calling a web API
+- Recognize the structure in a URL for a web API and adjust for your purposes
+- Explore and subset complex nested lists
+
+
+```{r setup_14, echo=FALSE, message=FALSE}
+library(tidyverse)
+library(httr2)
+library(xml2)
+```
+
+
+## APIs
+
+An **API** stands for **Application Programming Interface**, and this term describes a general class of tool that allows computer software, rather than humans, to interact with an organization's data. 
+
+- *Application* refers to software.
+- *Interface* can be thought of as a contract of service between two applications. This contract defines how the two communicate with each other using requests and responses. 
+  
+Every API has documentation for how software developers should structure requests for data / information and in what format to expect responses.
+
+
+##  Web APIs
+
+[Web APIs](https://en.wikipedia.org/wiki/Web_API), or Web Application Programming Interfaces, which focus on transmitting requests and responses for raw data through a web browser.
+
+- Our browsers communicate with web servers using a technology called [HTTP](https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol) or Hypertext Transfer Protocol.
+- Programming languages such as R can also use HTTP to communicate with web servers. 
+
+
+### URL
+
+Every document on the Web has a unique address. This address is known as Uniform Resource Locator (URL).
+
+Every URL has the same general structure. Let's look at this example:
+
+https://api.census.gov/data/2019/acs/acs1?get=NAME,B02015_009E,B02015_009M&for=state:*
+
+- `https://api.census.gov`: This is the **base URL**.
+    - `http://`: The **scheme**, which tells your browser or program how to communicate with the web server. This will typically be either `http:` or `https:`.
+    - `api.census.gov`: The **hostname** or **host address**, which is a name that identifies the web server that will process the request.
+- `data/2019/acs/acs1`: The **file path**, which tells the web server how to get to the desired resource.
+- `?get=NAME,B02015_009E,B02015_009M&for=state:*`: The **query string** or **query parameters**, which provide the parameters for the function you would like to call.
+    - This is a string of key-value pairs separated by `&`. That is, the general structure of this part is `key1=value1&key2=value2`.
+
+key      value
+----     ------
+get      NAME,B02015_009E,B02015_009M
+for      state:*
+
+### Example Web API's
+
+A large variety of web APIs provide data. Almost all reasonably large commercial websites offer Web APIs. 
+
+Todd Motto has compiled an expansive list of [Public Web APIs](https://github.com/toddmotto/public-apis) on GitHub. 
+Browse this list to see what data sources are available.
+
+
+## Wrapper packages
+
+In R, it is easiest to access Web APIs through a **wrapper package**, an R package written specifically for a particular Web API.
+
+- The R development community has already contributed wrapper packages for most large Web APIs.
+- To find a wrapper package, search the web for "R package" and the name of the website. For example:
+    - Searching for "R Reddit package" returns [RedditExtractor](https://cran.r-project.org/web/packages/RedditExtractoR/index.html)
+    - Searching for "R Weather.com package" returns [weatherData](https://ram-n.github.io/weatherData/)
+- [rOpenSci](https://ropensci.org/packages/) also has a good collection of wrapper packages.
+
+In our work with maps, we've used the `tidycensus` package to obtain census data to display on maps. `tidycensus` is a wrapper package that makes it easy to obtain desired census information:
+
+```{r tidycensus, eval=FALSE}
+tidycensus::get_acs(
+    year = 2020,
+    state = "MN",
+    geography = "tract",
+    variables = c("B01003_001", "B19013_001"),
+    output = "wide",
+    geometry = TRUE
+)
+```
+
+Extra Resources:
+
+- `tidycensus`: wrapper package that provides an interface to a few census datasets with map geometry included
+    - Full documentation is available at <https://walker-data.com/tidycensus/>
+- `censusapi`: wrapper package that offers an interface to all census datasets
+    - Full documentation is available at <https://www.hrecht.com/censusapi/>
+
+What is going on behind the scenes with `get_acs()`? Let's look at access Web API's directly with URL's.
+
+
+
+## Accessing web APIs directly
+
+### Getting a Census API key
+
+Many APIs require users to obtain a **key** to use their services.
+
+- This lets organizations keep track of what data is being used.
+- It also **rate limits** their API and ensures programs don't make too many requests per day/minute/hour. Be aware that most APIs do have rate limits --- especially for their free tiers.
+
+Navigate to <https://api.census.gov/data/key_signup.html> to obtain a Census API key:
+
+- Organization: Macalester College
+- Email: Your Mac email address
+
+You will get the message:
+
+> Your request for a new API key has been successfully submitted. Please check your email. In a few minutes you should receive a message with instructions on how to activate your new key.
+
+Check your email. Copy and paste your key into a new text file:
+
+- File > New File > Text File (towards the bottom of the menu)
+- Save as `census_api_key.txt` in the same folder as this `.qmd`.
+
+Read in the key with the following code:
+
+
+```{r read_census_api_key2}
+#| eval: false
+census_api_key <- readLines("~/Documents/GitHub/stat212/portfolio-cluno113/src/ica/census_api_key.txt")
+```
+
+### Navigating API documentation
+
+Navigate to the [Census API user guide](https://www.census.gov/data/developers/guidance/api-user-guide.html) and click on the "Example API Queries" tab.
+
+Let's look at the Population Estimates Example and the American Community Survey (ACS) Example. 
+
+These examples walk us through the steps to incrementally build up a URL to obtain desired data. This URL is known as a web API **request**. 
+
+https://api.census.gov/data/2019/acs/acs1?get=NAME,B02015_009E,B02015_009M&for=state:*
+
+For this request, 
+
+- we can adjust the **path** to change desired dataset (acs1) and year 
+- we can adjust the **query string** to get different variables (`get`) and for different states (`for`)
+  
+`?get=NAME,B02015_009E,B02015_009M&for=state:*` 
+    
+
+Typically, each of these URL components will be specified in the API documentation. 
+
+Sometimes, the scheme, hostname, and path (`https://api.census.gov/data/2019/acs/acs1`) will be referred to as the **[endpoint](https://en.wikipedia.org/wiki/Web_API#Endpoints)** for the API call.
+
+### Building a URL with `httr2`
+
+We will use the `httr2` package to build up a full URL from its parts because of URLs need to be [percent encoded](https://en.wikipedia.org/wiki/Percent-encoding).
+
+- `request()` creates an API request object using the **base URL**
+- `req_url_path_append()` builds up the URL by adding path components separated by `/`
+- `req_url_query()` adds the `?` separating the endpoint from the query and sets the key-value pairs in the query
+    - The `.multi` argument controls how multiple values for a given key are combined.
+    - The `I()` function around `"state:*"` inhibits parsing of special characters like `:` and `*`. (It's known as the "as-is" function.)
+    - The backticks around `for` are needed because `for` is a reserved word in R (for for-loops). You'll need backticks whenever the key name has special characters (like spaces, dashes).
+    - We can see from [here](https://www.census.gov/data/developers/guidance/api-user-guide.Help_&_Contact_Us.html) that providing an API key is achieved with `key=YOUR_API_KEY`.
+
+```{r httr2_census}
+library(httr2)
+req <- request("https://api.census.gov") |> 
+    req_url_path_append("data") |> 
+    req_url_path_append("2019") |> 
+    req_url_path_append("acs") |> 
+    req_url_path_append("acs1") |> 
+    req_url_query(get = c("NAME", "B02015_009E", "B02015_009M"), `for` = I("state:*"), key = census_api_key, .multi = "comma")
+```
+
+**Why would we ever use these steps instead of just using the full URL as a string?**
+
+- To generalize this code with functions!
+- To handle special characters
+    - e.g., query parameters might have spaces, which need to be represented in a particular way in a URL (URLs can't contain spaces)
+
+### Sending a request with `httr2`{-}
+
+Once we've fully constructed our request, we can use `req_perform()` to send out the API request and get a **response**.
+
+```{r census_request}
+resp <- req_perform(req)
+```
+
+### Getting a response with `httr2`
+
+We see from `Content-Type` that the format of the response is something called JSON. We can navigate to the request URL to see the structure of this output.
+
+- We can use `resp_body_json()` in `httr2` to parse the JSON into a nicer R format.
+    - This function uses `fromJSON()` behind the scenes.
+    - Without `simplifyVector = TRUE`, the JSON is read in as a list. 
+
+```{r census_json}
+library(dplyr)
+resp_json_df <- resp |> resp_body_json(simplifyVector = TRUE)
+
+# Data Cleaning
+resp_json_df <- janitor::row_to_names(resp_json_df, 1) |> # Move 1st row to Names
+  as.data.frame() |> # Convert Matrix to Data Frame
+  mutate(across(starts_with('B'), as.numeric)) # Convert all variables that start with B to numeric
+
+head(resp_json_df)
+```
+
+To learn more about JSON, consult the following readings:
+
+1. [A Non-Programmer's Introduction to JSON](https://blog.scottlowe.org/2013/11/08/a-non-programmers-introduction-to-json/)
+2. [Getting Started With JSON and jsonlite](https://cran.r-project.org/web/packages/jsonlite/vignettes/json-aaquickstart.html)
+3. [Fetching JSON data from REST APIs](https://cran.r-project.org/web/packages/jsonlite/vignettes/json-apis.html)
+
+
+## More API Examples
+
+### Board Game Geek & XML Data
+
+The [Board Game Geek API](https://boardgamegeek.com/wiki/page/BGG_XML_API2) is referenced in the [Games & Comics](https://github.com/toddmotto/public-apis?tab=readme-ov-file#games--comics) section of [toddmotto's public API list](https://github.com/toddmotto/public-apis).
+
+Our goal is to use the search API at the bottom of the page. 
+
+Let's start at the top of the API documentation page to see how to navigate this reference.
+
+- We can see from the XML references at the top that we will be expecting a new output format: XML stands for Extensible Markup Language
+- The "Root Path" section tells us the base URL for the Board Game Geeks API endpoints and related APIs: <https://boardgamegeek.com/xmlapi2/>
+- The "Search" section at the bottom of the page tells us:
+    - the path for the search endpoint (`/search`)
+    - what query parameters are possible
+    - particular formatting instructions for query parameter values
+
+The following request searches for board games, board game accessories, and board game expansions with the words "mystery" and "curse" in the title:
+
+```{r httr2_bgg}
+req <- request("https://boardgamegeek.com/xmlapi2") |> 
+    req_url_path_append("search") |> 
+    req_url_query(query = I("mystery+curse"), type = I("boardgame,boardgameaccessory,boardgameexpansion"))
+```
+
+When we use `req_perform()`, we see from `Content-Type` that the format of the response is something called XML. We can navigate to the request URL to see the structure of this output.
+
+- XML (Extensible Markup Language) is a tree structure of named nodes and attributes.
+- We can use `resp_body_xml()` to read in the XML as an R object.
+
+```{r bgg_response}
+resp <- req_perform(req)
+resp
+resp <- resp_body_xml(resp)
+resp
+```
+
+The XML output is not packaged in a nice way. (We'd love to have a data frame.) We can use the `xml2` package to explore and navigate the XML structure to extract the information we need.
+
+Let's first use the `xml_structure()` function to see how information is organized:
+
+```{r xml_structure}
+library(xml2)
+xml_structure(resp)
+```
+
+The key navigation and extraction functions in `xml2` are:
+
+- `xml_children()`: Get nodes that are nested inside 
+    - Like getting the first level bullet points inside a given bullet point
+- `xml_find_all()`: Finds nodes matching an XPath expression (XPath stands for XML path)
+    - XPath expressions are like string regular expressions for XML trees
+    - See [here](https://www.w3schools.com/xml/xpath_intro.asp) for a deeper dive into XPath
+- `xml_attr()`: Selects the value of an attribute (the information to the right of the `=` in quotes)
+    - `<node_name attribute_name1="attribute_value1" attribute_name2="attribute_value2">`
+
+```{r xml_nav_extract}
+# Get the item nodes in 2 different ways
+resp |> xml_find_all("item")
+resp |> xml_children()
+
+# Get the item "type"
+resp |> xml_find_all("item") |> xml_attr("type")
+
+# The <name> and <yearpublished> nodes are nested within each <item>
+resp |> xml_find_all("item/name")
+resp |> xml_find_all("item/yearpublished") # Notice that this is length 8 instead of 9!
+
+# Get the "primary" or "alternate" designation for each name
+resp |> xml_find_all("item/name") |> xml_attr("type")
+```
+
+**Exercises**
+
+1. Get the board game name (e.g., "Murder Mystery..." and  "Robinson Crusoe")
+```{r}
+resp |> xml_find_all("item/name") |> xml_attr("value")
+```
+
+2. Get the board game ID number (e.g., 63495, 40175)
+```{r}
+resp |> xml_find_all("item") |> xml_attr("id")
+```
+
+
+
+### New York Times API
+
+This example will build on the [New York Times Web API](https://developer.nytimes.com/), which provides access to news articles, movie reviews, book reviews, and many other data. 
+
+We will specifically focus on the [Article Search API](https://developer.nytimes.com/docs/articlesearch-product/1/overview), which finds information about news articles that contain a particular word or phrase.
+
+To get started with the NY Times API, you must [register and get an **authentication key**](https://developer.nytimes.com/accounts/create). Signup only takes a few seconds, and it lets the New York Times make sure nobody abuses their API for commercial purposes. It also **rate limits** their API and ensures programs don't make too many requests per day. For the NY Times API, this limit is 1000 calls per day. 
+
+Once you have signed up, verified your email, log back in to https://developer.nytimes.com. Under your email address, click on Apps and Create a new App (call it First API) and enable Article Search API, then press Save. This creates an **authentication key**, which is a 32 digit string with numbers and the letters a-e. 
+
+As with your census API key, save this key in a `.txt` file, and read it in and store this in a variable called `times_key`.
+
+```{r nyt_key_2}
+#| eval: false
+library(readr)
+times_key <- read_lines("nyt_api_key.txt")
+```
+
+
+
+Open this URL in your browser (you should replace `MY_KEY` with the API key you were given).
+
+    http://api.nytimes.com/svc/search/v2/articlesearch.json?q=gamergate&api-key=MY_KEY
+    
+The text you see in the browser is the response data (in JSON format). 
+
+This URL has the same structure that we discussed above for the census API:
+
+- `http://` --- The **scheme**, which tells your browser or program how to communicate with the web server. This will typically be either `http:` or `https:`.
+- `api.nytimes.com` --- The **hostname**, which is a name that identifies the web server that will process the request.
+- `/svc/search/v2/articlesearch.json` --- The **path**, which tells the web server what function you would like to call (a function for searching articles).
+- `?q=gamergate&api-key=MY_KEY` --- The **query parameters**, which provide the parameters for the function you would like to call. The key value pairs are the following:
+
+key      value
+----     ------
+q        gamergate
+api-key  MY_KEY
+
+The scheme, hostname, and path (`http://api.nytimes.com/svc/search/v2/articlesearch.json`) together form the **[endpoint](https://en.wikipedia.org/wiki/Web_API#Endpoints)** for the API call.
+
+We can use the `httr2` package to build up a full URL from its parts:
+
+```{r httr2_nyt}
+#| eval: false
+req <- request("http://api.nytimes.com") |> 
+    req_url_path_append("svc") |> 
+    req_url_path_append("search") |> 
+    req_url_path_append("v2") |> 
+    req_url_path_append("articlesearch.json") |> 
+    req_url_query(q = "gamergate", `api-key` = times_key)
+```
+
+
+We can write a function to generate the URL for a user-specified query:
+
+```{r create_nyt_url}
+#| eval: false
+create_nyt_url <- function(query, key) {
+    request("http://api.nytimes.com") |> 
+        req_url_path_append("svc") |> 
+        req_url_path_append("search") |> 
+        req_url_path_append("v2") |> 
+        req_url_path_append("articlesearch.json") |> 
+        req_url_query(q = query, `api-key` = key)
+}
+```
+
+Let's use this function to find articles related to:
+
+- `Ferris Bueller's Day Off` (note the spaces and the apostrophe)
+- `Penn & Teller` (note the spaces and the punctuation mark `&`)
+
+Let's see how these queries are translated into the URLs:
+
+```{r use_create_nyt_url}
+#| eval: false
+req_fb <- create_nyt_url(query = "Ferris Bueller's Day Off", key = times_key)
+req_pt <- create_nyt_url(query = "Penn & Teller", key = times_key)
+```
+
+We can use `req_perform()` to send out the request and `resp_body_json()` to parse the resulting JSON:
+
+```{r nyt_responses}
+#| eval: false
+library(jsonlite)
+
+resp_pt <- req_pt |> req_perform() |> resp_body_json(simplifyVector = TRUE)
+```
+
+
+#### Exploring complex lists
+
+`resp_pt` is a **list**. A list is a useful structure for storing elements of different types. Data frames are special cases of lists where each list element has the same length (but where the list elements have different classes).
+
+Lists are a very flexible data structure but can be very confusing because list elements can be lists themselves!
+
+We can explore the structure of a list in two ways:
+
+- Entering `View(list_object)` in the Console. The triangle buttons on the left allow you to toggle dropdowns to explore list elements.
+- Using the `str()` (structure) function.
+
+
+Using base R subsetting, we can access elements of a list in three ways:
+
+- By *position* with double square brackets `[[`:
+
+```{r list_access1}
+#| eval: false
+# This gets the first element of the list
+resp_pt[[1]]
+```
+
+
+- By *name* with double square brackets `[[`: (note that list elements are not always named, so this won't always be possible)
+
+```{r list_access2}
+#| eval: false
+# Accessing by name directly
+resp_pt[["status"]]
+
+# Accessing via a variable
+which_element <- "status"
+resp_pt[[which_element]]
+```
+
+- By *name* with a dollar sign `$`: (Helpful tip: For this mode of access, RStudio allows tab completion to fill in the full name)
+
+```{r list_access3}
+#| eval: false
+resp_pt$status
+```
+
+We can retrieve these *nested* attributes by sequentially accessing the object keys from the outside in. For example, the `meta` element would be accessed as follows:
+
+```{r list_access4}
+#| eval: false
+resp_pt$response$meta
+```
+
+
+**Exercise:** In the `resp_pt` object, retrieve the data associated with:
+
+- the `copyright` key
+- the number of `hits` (number of search results) within the `meta` object
+- the abstracts and leading paragraphs of the articles found in the search
+
+```{r}
+resp_pt$copyright
+resp_pt$response$meta$hits
+
+resp_pt$response$docs$abstract
+resp_pt$response$docs$headline
+```
+
+
+## Done!
+
+- Check the ICA Instructions for how to (a) push your code to GitHub and (b) update your portfolio website
+
