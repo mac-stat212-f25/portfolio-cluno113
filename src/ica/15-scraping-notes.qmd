@@ -156,6 +156,13 @@ Consult with your peers and compare plans.
 Write a few observations about your comfort/confidence in this planning exercise. As you proceed through the implementation of this plan in the next steps, make notes about any places you struggled, were uncertain, or benefited from peer input.
 :::
 
+```{r html_elements_text}
+description <- nih |>
+    html_elements(".thumbnail-teaser__description") |>
+    html_text()
+head(description)
+```
+
 **Exercise:** Carry out your plan to get the article title, publication date, and abstract text for the first 5 pages of news releases in a single data frame. You will need to write at least one function, and you will need iteration--Start with an appropriate `map()` function from `purrr`. If you have time, also try to use a `for` loop instead.
 
 Notes:

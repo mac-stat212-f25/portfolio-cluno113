@@ -85,9 +85,6 @@ book:
         -  src/exam/nyt_viz.qmd
         -  src/exam/cp1.qmd
 
-    - part: "Project"
-      chapters:
-      - src/proj/proj.qmd
 
   appendices:
   - src/appx/appx-sample1.qmd

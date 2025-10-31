@@ -464,3 +464,21 @@ resp_pt$response$docs$headline
 
 - Check the ICA Instructions for how to (a) push your code to GitHub and (b) update your portfolio website
 
+```{r}
+library(rvest)
+url <- "https://www.macalester.edu/registrar/academic-calendars/"
+page <- url |> read_html()
+# use selector chrome extension to find
+content <- page |> 
+  html_elements(".layout-interior__components")
+
+content |> 
+  html_elements("h3, h4") |> 
+  html_text()
+
+content |> 
+  html_elements("table") |> 
+  html_table()
+```
+
+
