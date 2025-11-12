@@ -30,18 +30,20 @@ ui <- fluidPage(
         sidebarPanel(
 
           selectInput(
-              data_by_dist$metro_name,
+              "city",
               "City Name",
               metro_names,
-              selected = TRUE,
+              selected = metro_names[1],
               multiple = FALSE
             ),
 
-            sliderInput("bins",
-                        "Span parameter:",
-                        min = 0,
+            sliderInput(
+                        inputId = "span",
+                        label = "Span parameter:",
+                        min = 0.1,
                         max = 1,
-                        value = 10)
+                        value = 0.5,
+                        step = 0.05)
         ),
 
         # Show a plot of the generated distribution
@@ -55,14 +57,18 @@ ui <- fluidPage(
 server <- function(input, output) {
 
     output$distPlot <- renderPlot({
-        # generate bins based on input$bins from ui.R
-        x    <- faithful[, 2]
-        bins <- seq(min(x), max(x), length.out = input$bins + 1)
+        city_data <- data_by_year |> filter(metro_name == input$city)
 
-        # draw the histogram with the specified number of bins
-        hist(x, breaks = bins, col = 'darkgray', border = 'white',
-             xlab = 'Waiting time to next eruption (in mins)',
-             main = 'Histogram of waiting times')
+        fig <- ggplot(city_data, aes(x = distmiles, y = entropy)) +
+          geom_point(alpha = 0.4) +
+          geom_smooth(method = "loess", span = input$span, se = FALSE, color = "red") +
+          labs(
+            title = paste("Diversity Gradient for", input$city, "(2020 US Census)"),
+            x = "Distance From City Hall (Miles)",
+            y = "Diversity Score"
+          )
+
+        ggplotly(fig)
     })
 }
 
