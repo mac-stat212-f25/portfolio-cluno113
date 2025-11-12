@@ -33,7 +33,7 @@ section <- as.data.frame(section)
 ```
 
 ```{r}
-install.packages(c("tm", "SnowballC", "wordcloud", "RColorBrewer"))
+# install.packages(c("tm", "SnowballC", "wordcloud", "RColorBrewer"))
 library("tm")
 library("SnowballC")
 library("wordcloud")

@@ -345,7 +345,7 @@ Note two characteristics of SQL summarization here:
 
 
 **Exercise:** Find the most commonly used tagsets (sets/combinations of tags) applied to posts. Note that this is not asking you to count the most common individual tags --- this would be more complex because multiple tags are squashed into the Tags field.
-```{r}
+```{sql eval=FALSE}
 SELECT
 Tags, COUNT(Tags) numTagsets
 FROM posts
@@ -380,7 +380,7 @@ We see a few notable items here:
 - We need to specify the relationship that joins the two tables. In this case, a posts `OwnerUserId` column refers to the `Id` column in the users table.
 
 **Exercise:** Create a query similar to the one above that identifies the authors of the top rated comments instead of posts.
-```{r}
+```{sql eval=FALSE}
 SELECT TOP(100)
 Text, Score, DisplayName, Reputation, AboutMe, Views, UpVotes, DownVotes
 FROM Comments c
