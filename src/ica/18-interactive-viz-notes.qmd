@@ -118,7 +118,7 @@ Save the two files, [diverse_data_by_dist.rds](https://mac-stat.github.io/data/d
 
 ```{r reading}
 #| eval: false
-data_by_dist <- read_rds("relative path to diverse_data_by_dist.rds")
+data_by_dist <- read_rds("data/diverse_data_by_dist.rds")
 data_by_year <- read_csv("relative path to diverse_data_by_year.csv")
 ```
 
