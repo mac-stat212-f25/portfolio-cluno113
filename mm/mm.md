@@ -11,3 +11,7 @@
 ## Advanced Data Visualization
 
 ![adv-data-viz.jpg](adv-data-viz.jpg)
+
+## Missing Data
+
+![wrangling.jpg](wrangling.jpg)
