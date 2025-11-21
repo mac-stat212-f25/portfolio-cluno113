@@ -84,6 +84,7 @@ book:
         -  src/exam/exam1.qmd
         -  src/exam/nyt_viz.qmd
         -  src/exam/cp1.qmd
+        -  src/exam/exam2.qmd
 
 
   appendices:

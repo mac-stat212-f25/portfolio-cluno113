@@ -3,7 +3,6 @@ title: "Professional Viz Sample"
 ---
 
 ```{r nyt_key}
-#| eval: false
 library(readr)
 library(tidyverse)
 library(httr2)
@@ -12,7 +11,6 @@ times_key <- read_lines("pv.txt")
 ```
 
 ```{r create_nyt_url}
-#| eval: false
 create_nyt_url <- function(section = "viewed", period = 1, key) {
   request("https://api.nytimes.com") |>
     req_url_path_append("svc", "mostpopular", "v2", paste0(section, "/", period, ".json")) |>
@@ -21,7 +19,6 @@ create_nyt_url <- function(section = "viewed", period = 1, key) {
 ```
 
 ```{r use_create_nyt_url}
-#| eval: false
 req_most_viewed <- create_nyt_url("viewed", 1, times_key)
 resp <- req_perform(req_most_viewed)
 data <- resp_body_json(resp)
@@ -79,5 +76,12 @@ if(require(RColorBrewer)){
 
 wordcloud(d)
 ```
+```{r}
+	pal <- brewer.pal(9,"BuGn")
+	pal <- pal[-(1:4)]
+	wordcloud(d$word,d$freq,c(8,.3),2,,FALSE,,.15,pal)
+	title("Most Popular NYT Titles", line = 2)
+```
+
 
 
