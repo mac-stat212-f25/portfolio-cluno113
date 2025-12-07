@@ -70,3 +70,7 @@ _freeze/
 *.aux
 *.toc
 a34a70bb166ff6f5/
+*.csv
+*.xlsx
+*.geojson
+/proj/nyct2020_25d

@@ -68,6 +68,7 @@ book:
       chapters:
       - src/tt/2025-07-08.qmd
       - src/tt/2025-07-15.qmd
+      - proj/global.qmd
 
     - part: "In-Class Activities"
       chapters:
