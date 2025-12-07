@@ -1,0 +1,531 @@
+---
+title: "10 Base R"
+---
+
+## 🧩 Learning Goals
+
+By the end of this lesson, you should be able to:
+
+- Identify and define the properties of common structures in R
+- Subset vectors and lists with `[` by index, name, logical vector, and indirectly with objects
+- Subset data frames and lists with `$` and `[[`
+- Use the `str()` function to examine the structure of an unfamiliar object and extract components from the object
+- Apply printing strategies to streamline the debugging and development process
+
+
+## Common R Object Structures 
+
+**Vector**: A vector is a **collection of elements** of the **same type** (e.g., numeric, integer, character, logical).
+
+```{r include = FALSE}
+library(tidyverse)
+library(tibble)
+```
+
+
+```{r}
+num_vec <- vector("numeric", length = 2) #empty vector: Zeros
+num_vec
+class(num_vec)
+length(num_vec)
+```
+
+
+```{r}
+log_vec <- vector("logical", length = 3) #empty vector: FALSE
+log_vec
+class(log_vec)
+length(log_vec)
+```
+
+
+```{r}
+chr_vec <- vector("character", length = 4) #empty vector: empty strings
+chr_vec
+class(chr_vec)
+length(chr_vec)
+```
+
+
+- *Fun Fact: A vector can have names for each of its elements.*
+
+
+```{r}
+named_vec <- c('name1' = 1, 'name2' = 2) # Named numeric vector
+named_vec
+class(named_vec)
+length(named_vec)
+```
+
+
+
+**List**: A list is a collection of elements (e.g., vectors, matrices, data frames, other lists).
+
+- A list can have different types of elements.
+- A list can have names for its elements.
+
+
+```{r}
+ex_list <- list(a = 1:3, b = c("a", "b", "c"), c = matrix(1:6, nrow = 2))
+ex_list
+
+class(ex_list)
+length(ex_list) # number of elements in a list
+
+```
+
+## Other Common R Object Structures 
+
+
+**Array**: An array is a **vector** with a dimension attribute.
+
+- Like a vector, an array can only have one type of data (e.g., numeric, character).
+
+```{r}
+ary <- array(NA, dim = c(2,3,4))
+ary
+
+class(ary)
+length(ary) # The number of elements in a array is the product of its dimensions
+dim(ary) # Get the dimensions of the array
+
+```
+
+
+**Matrix**: A matrix is an **array** with only 2 dimensions (rows, columns).
+
+- Like a vector, a matrix can only have one type of data (e.g., numeric, character).
+
+```{r}
+m <- matrix(NA, nrow = 2, ncol = 3)
+m
+
+class(m)
+length(m) # The number of elements in a matrix is the product of its dimensions
+dim(m) # Get the dimensions of the matrix
+
+```
+
+
+
+
+**Data Frame/tibble**: A data frame is a named **list** with **elements** of equal length. 
+
+- Each element is a "column" in the data frame. 
+- The columns can be of different types (e.g., character, numeric, logical, lists, etc.). 
+- Data frames are the most common way to store data in R.
+- [Tibbles do less and complain more than base data.frames](https://tibble.tidyverse.org/reference/tbl_df-class.html)
+
+```{r}
+mod_df <- tibble(x = 1:10, y = 1:10 + rnorm(10))
+
+df <- tibble(a = 1:3, b = c("constant", "x", "x squared"), d = list(lm(y ~ 1, data = mod_df), lm(y ~ x, data = mod_df), lm(y ~ x + I(x^2), data = mod_df)))
+df
+
+length(df) # number of "elements" in a data frame is the number of "columns"
+
+```
+
+
+
+
+## Base R Subsetting 
+
+The content here comes from Chapter 27 of R4DS, with some small additions.
+
+## Selecting elements with `[` 
+
+We can subset common R structures and **maintain the class structure** with `[ ]`.
+
+There are four main types of things that you can subset with, i.e., that can be the `i` in `x[i]`:
+
+1.  **A vector of positive integers**.
+    Subsetting with positive integers keeps the elements at those positions:
+
+```{r}
+# Vectors
+x <- c("one", "two", "three", "four", "five")
+x[c(3, 2, 5)]
+x[2:4]
+class(x[2:4]) # result is a character vector
+```
+
+
+```{r}
+# Lists
+y <- list(a = 1:3, b = c("a", "b", "c"), c = matrix(1:6, nrow = 2))
+y[c(1, 2)]
+
+class(y[c(1)]) # result is a list
+```
+
+
+By repeating a position, you can actually make a longer output than input, making the term "subsetting" a bit of a misnomer.
+
+```{r}
+# Vector
+x[c(1, 1, 2)]
+
+# List
+y[c(1, 1, 2)]
+```
+
+
+2.  **A vector of negative integers**.
+    Negative values drop the elements at the specified positions:
+
+```{r}
+# Vector
+x[c(-1, -3, -5)]
+
+# List
+y[c(-1)]
+
+```
+
+
+3.  **A logical vector**.
+    Subsetting with a logical vector only keeps values corresponding to `TRUE`.
+    This is generally used with comparison functions and operators.
+
+```{r}
+# Vector
+x <- c(10, 3, NA, 5, 8, 1, NA)
+
+# All non-missing values of x
+x[!is.na(x)]
+
+# All values greater than 5, with NAs
+x[x > 5]
+    
+# All non-missing values greater than 5
+x[x > 5 & !is.na(x)]
+```
+
+
+Unlike `filter()`, `NA` indices will be included in the output as `NA`s unless you explicitly remove them (`filter()` removes instances of missing values by default.
+
+```{r}    
+# Compare with filter 
+filter(tibble(x = x), x > 5)
+```
+
+
+```{r}
+# List
+y[c(TRUE, FALSE, TRUE)]
+y[y |> map_lgl(~ is.numeric(.x))] # example of a map function!
+y[y |> map_lgl(~ is.character(.x))]
+```
+
+
+
+4.  **A character vector**.
+    If you have a named vector or list, you can subset it with a character vector:
+
+```{r}
+# Named Vector
+x <- c(abc = 1, def = 2, xyz = 5)
+x[c("xyz", "def")]
+x[c("xyz","xyz","xyz", "def")]
+
+#Named List
+y[c('a','a','c')]
+```
+
+As with subsetting with positive integers, you can use a character vector to duplicate individual entries.
+
+
+**Be very wary of vector recycling when doing this!** 
+The number of things that you're inserting should either be 1 or the size of the `x[i]` subset.
+
+```{r}
+x <- c(first = "one", second = "two", third = "three", fourth = "four")
+x
+```
+
+
+```{r}
+x[c(1, 3)] <- "new" # Replacement length is 1
+x
+```
+
+
+```{r}
+x <- c(first = "one", second = "two", third = "three", fourth = "four")
+x[c(1, 3)] <- c("new1", "new2") # Replacement length is 2, and length of subset is 2
+x
+```
+
+
+```{r}
+x <- c(first = "one", second = "two", third = "three", fourth = "four")
+x[c(1, 3, 4)] <- c("new1", "new2") # BAD! Replacement length is 2, and length of subset is 3
+x
+```
+
+
+```{r}
+x <- c(first = "one", second = "two", third = "three", fourth = "four")
+x[c(1, 3)] <- c("new1", "new2", "new3") # BAD! Replacement length is 3, and length of subset is 2
+x
+```
+
+## Subsetting Matricies and Data Frames with `[` 
+
+All of the above subsetting options can be used for subsetting matrices and data frames (named list of elements of equal length). 
+
+```{r}
+m <- matrix(1:12, nrow = 3, ncol = 4)
+m
+
+m[1:5] # Matrix = vector (down the columns) with dimensions
+```
+
+You can use a comma to subset by rows and columns separately.
+
+
+```{r}
+m[1,] # Get 1st row
+m[,1] # Get 1st column
+```
+
+. . .
+
+```{r}
+m[1,3] # Get 1st row and 3rd column
+
+m[c(1,3),] # Get 1st and 3rd rows
+m[,c(1,3)] # Get 1st and 3rd columns
+m[c(1,3),c(1,3)] # Get 1st and 3rd rows and 1st and 3rd columns
+
+m[-1,] # Get all rows except 1st
+m[c(TRUE, FALSE, FALSE),] # Get the 1st row via a logical
+
+
+# Add row and column names to the matrix
+colnames(m) <- str_c("col", 1:4)
+rownames(m) <- str_c("row", 1:3)
+m["row1",]
+
+```
+
+## Selecting a single element with `$` and `[[` 
+
+We can use `$` and `[[` to extract a single column of a data frame or an element within a list. This **breaks out of the original class structure**.
+
+```{r}
+mtcars
+mtcars$mpg
+mtcars[["mpg"]]
+mtcars |> pull(mpg)
+```
+
+## Exercises 
+
+1. **Subsetting Functions** For each of the tasks below, write a function that take a vector as input returns the desired output:
+
+a. The elements at even-numbered positions. (Hint: use the `seq()` function.)
+```{r}
+get_even_pos <- function(x) {
+  if (length(x) <= 1) {
+    print("no even positions")
+  } else {
+    i <- seq(2, length(x), by = 2)
+    x[i]
+  }
+}
+
+get_even_pos(1:10)
+```
+
+b. Every element except the last value.
+```{r}
+no_last_value <- function(x) {
+  head(x, -1)
+}
+no_last_value(1:10)
+```
+
+c. Only even values (and no missing values).
+```{r}
+only_even_no_missing <- function(x) {
+  x[x %/% 2 == 0 & !is.na(x)]
+}
+
+only_even_no_missing(c(1, 2, 3, 4, NA))
+```
+
+
+## Exploring the structure of an object with `str()`  
+
+The `str()` function shows you the structure of an object and is useful for exploring model objects and objects created from packages that are new to you. 
+
+In the output of `str()` dollar signs indicate named components of a list that can be extracted via `$` or `[[`.
+
+. . .
+
+We see that both `mod` and `mod_summ` are lists, so we can also interactively view these objects with `View(mod)` and `View(mod_summ)` in the Console.
+
+```{r}
+mod <- lm(mpg ~ hp + wt, data = mtcars)
+mod_summ <- summary(mod)
+
+str(mod)
+str(mod_summ)
+```
+
+## Exercise 
+
+2. **CI Function** Write a function that fits a linear model on the dataset using the given outcome and predictor variables and return a data frame (`tibble`) with the coefficient estimate and CI for the predictor of interest. It should take the following inputs:
+
+- `data`: A dataset
+- `yvar`: Outcome variable to be used in a linear model (a length-1 character vector)
+- `preds`: Predictor variables to be used in a linear model (a character vector)
+- `pred_of_interest`: The variable whose coefficient estimate and confidence interval are of interest (a length-1 character vector and should be one of `preds`)
+
+Development tip: As you develop, it will help to create objects for the arguments so that you can see what output looks like interactively:
+
+Test your function on the `mtcars` dataset.
+
+```{r eval=FALSE}
+data <- mtcars
+yvar <- "mpg"
+preds <- c("hp", "wt")
+pred_of_interest <- "hp"
+```
+
+When you're done developing your function, remove these objects to declutter your environment by entering `rm(data, yvar, preds, pred_of_interest)` in the Console.
+
+```{r eval=FALSE}
+fit_mod_and_extract <- function(x) {
+    # Use str_c to create a string (formula_str) that looks like "yvar ~ pred1 + pred2"
+    # Look at the documentation for a helpful argument
+    mod_formula_str <- str_c(yvar, "~", str_c(preds, collapse = "+"))
+    mod_form <- as.formula(mod_formula_str)
+    
+    # Fit a linear model using the constructed formula and given data
+    mod <- lm(mod_form, data = data)
+    
+    
+    # Obtain 95% confidence interval
+    ci <- confint(mod, level = 0.95)
+    
+    # Return the coefficient estimate and CI for the predictor of interest
+    tibble(
+        which_pred = pred_of_interest,
+        estimate = mod$coefficients[pred_of_interest],
+        ci_lower = ci[pred_of_interest, "2.5%"],
+        ci_upper = ci[pred_of_interest, "97.5%"]
+    )
+}
+```
+
+```{r}
+
+
+
+
+```
+
+
+
+
+## Debugging Strategies   
+
+When writing functions and working with functions that you wrote, you may encounter errors that are hard to figure out. 
+
+Here are some strategies to help you debug the issues you encounter:
+
+- Use `print()` and `cat()` to print out intermediate results and messages within a function.
+  - Examples: `print(x)`, `cat("The value of x is", x, "\n")`
+
+```{r eval=FALSE}
+My_own_sum <- function(x){
+  print(x)
+  return(sum(x))
+}
+My_own_sum(c(1,2,3))
+
+My_own_sum <- function(x){
+  cat("The value of x is", x, "\n")
+  cat("The class of x is", class(x), "\n")
+  return(sum(x))
+}
+
+My_own_sum(c(1,2,3))
+```
+
+
+- Use `browser()` to pause the function at a certain point and interactively explore the environment. Press "Next" or type `n` to run the next line of code. Type the name of an object in the Console to see its value at this point in the function. You can type `Q` to quit the browser. 
+  - Example below:
+  
+```{r eval = FALSE}
+fit_mod_and_extract <- function(data, yvar, preds, pred_of_interest) {
+    # Use str_c to create a string (formula_str) that looks like "yvar ~ pred1 + pred2"
+    # Look at the documentation for a helpful argument
+    mod_formula_str <- str_c(yvar, "~", str_c(preds, collapse = "+"))
+    mod_form <- as.formula(mod_formula_str)
+    
+    # Add browser() to where in the function you'd like to pause and interact in the function environment using the Console
+    browser()
+    
+    # Fit a linear model using the constructed formula and given data
+    mod <- lm(mod_form, data = data)
+    
+    # Obtain 95% confidence interval
+    ci <- confint(mod, level = 0.95)
+    
+    # Return the coefficient estimate and CI for the predictor of interest
+    tibble(
+        which_pred = pred_of_interest,
+        estimate = mod$coefficients[pred_of_interest],
+        ci_lower = ci[pred_of_interest, "2.5 %"],
+        ci_upper = ci[pred_of_interest, "97.5 %"]
+    )
+}
+
+
+fit_mod_and_extract(data = mtcars, yvar = "mpg", preds = c("hp", "wt"), pred_of_interest = "hp")
+```
+
+
+- Use `try()` to catch errors and print out a message when an error occurs.
+  - Example below:
+
+```{r error=TRUE}
+My_own_sum <- function(x){
+  return(sum(x))
+}
+
+results <- My_own_sum(c("a","b","c"))
+class(results)
+
+results <- try(My_own_sum(c("a","b","c")), silent = TRUE)
+class(results)
+
+```
+
+
+- Include `if else` statements within a function to ensure that you are passing the right type of input to a function. You can create you own custom error message with `stop()`. 
+  - Example below:
+
+```{r error=TRUE}
+My_own_sum <- function(x){
+  if(!is.numeric(x)){
+    stop("Input must be numeric")
+  }
+  return(sum(x))
+}
+
+results <- My_own_sum(c("a","b","c"))
+class(results)
+
+results <- try(My_own_sum(c("a","b","c")), silent = TRUE)
+class(results)
+
+```
+## Done!
+
+- Check the ICA Instructions for how to (a) push your code to GitHub and (b) update your portfolio website
+

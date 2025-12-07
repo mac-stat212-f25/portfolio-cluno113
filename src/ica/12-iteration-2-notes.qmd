@@ -1,0 +1,343 @@
+---
+title: "12 Loops+Iter P2"
+---
+
+## 🧩 Learning Goals
+
+By the end of this lesson, you should be able to:
+
+- Use the `map()` family of functions in the `purrr` package to handle repeated tasks that create output, instead of `for` loops 
+- Use the `walk()` family of functions in the `purrr` package to handle repeated tasks that need side-effects, instead of `for` loops 
+
+
+
+## Iteration review 
+
+Let's write a `for` loop that stores the `class()` (type) of every column in the `mtcars` data frame. 
+
+
+
+Yes, `str()` does this plus more for you. Let's consider replicating this task through low-level iteration.
+
+
+Recall that:
+
+- `vector("numeric/logical/character/list", length)` creates a storage container.
+- `mtcars[[1]]` accesses the first element/column of the data frame.
+
+
+- First, write out the steps in words.
+- Then translate each step to code.
+
+```{r}
+
+```
+
+## Iteration with `purrr` 
+
+`purrr` is a `tidyverse` package that provides several useful functions for iteration. 
+
+
+
+Open up the [`purrr` cheatsheet](https://rstudio.github.io/cheatsheets/purrr.pdf).
+
+
+The main advantages of `purrr` include:
+
+- Improved readability of R code
+- Reduction in the "overhead" in writing a `for` loop 
+    - These functions create storage containers 
+    - These functions do the `for (i in ...)` efficiently
+
+
+### Computational Time and Memory Allocation
+
+Compare the four ways to create a vector of integers from 1 to 100,000.
+
+
+```{r}
+# Example 1: For loop with no storage container; append new value to existing vector
+x <- integer()
+results1 <- bench::mark(
+  for (i in 1:1e5) {
+    x <- c(x, i)
+  }
+)
+
+# Example 2: For loop with a storage container!
+x <- vector('integer', length = 1e5)
+results2 <- bench::mark(
+  for (i in 1:1e5) {
+    x[i] <- i
+  }
+)
+
+# Example 3: purrr::map()
+results3 <- bench::mark(purrr::map_int(1:1e5, ~.x))
+
+
+# Example 4: Standard R Function/Operator
+results4 <- bench::mark(seq(1,1e5))
+```
+
+```{r}
+# Compile Results
+bind_rows(results1, results2, results3, results4) |>
+  mutate(type = c("for_loop_no_storage", "for_loop_with_storage", "purrr_map", "standard_func")) |>
+  select(type, mem_alloc, total_time)  |> print()
+
+```
+
+## Iteration with `map` 
+
+In `purrr`, we can use the family of `map()` functions to iteratively apply a function to each element of a list or vector and save its output. 
+
+
+- Reminder: Data frames/tibbles are named lists so the elements are the "columns" so `map()` can **iterate over columns of a dataset**.
+
+
+Let's look at the [`purrr` cheatsheet](https://rstudio.github.io/cheatsheets/purrr.pdf) to look at graphical representations of how these functions work.
+
+- `map()` returns a list
+- `map_chr()` returns a character vector
+- `map_lgl()` returns a logical vector
+- `map_int()` returns an integer vector
+- `map_dbl()` returns a numeric vector
+- `map_vec()` returns a vector of a different (non-atomic) type (like dates)
+
+
+Let's return to our original task to replicate `str()`.
+
+To get the `class()` of each data frame column, `map_chr()` is sensible because classes are strings:
+
+```{r purrr_col_classes}
+map_chr(mtcars, class)
+```
+
+
+Let's get the class of each variable in `diamonds`:
+
+```{r purrr_col_classes_error, error=TRUE}
+map_chr(diamonds, class)
+```
+
+What happened!? 
+
+`map_chr()` was expecting to create a character vector with one element per element (column) in `diamonds`. But something happened in column 2 with the `cut` variable. 
+
+
+Let's figure out what happened:
+
+```{r class_diamonds_cut}
+class(diamonds$cut)
+```
+
+Ah! `cut` has 2 classes. In this case, `map()` (which returns a list) is the best option because some variables have multiple classes:
+
+```{r purrr_col_classes_no_error}
+map(diamonds, class)
+```
+
+The error we encountered with `map_chr()` is a nice feature of `purrr` because it allows us to be very sure of the type of output we are getting.
+
+
+**Failing loudly is vastly preferable to getting unexpected outputs silently** 
+
+
+Recall that we explored syntax and functions for selecting variables in a data frame via the tidy-select documentation for `across`. (`?dplyr_tidy_select` in the Console.) 
+
+We can also combine `map_*()` functions with tidy selection for some powerful variable summaries that require much less code than `for` loops.
+
+```{r purrr_examples_by_col}
+# Mean of each numeric variable
+map_dbl(diamonds |> select(where(is.numeric)), mean)
+
+# Number of unique values in each non-numeric variable
+map_int(diamonds |> select(!where(is.numeric)), n_distinct)
+```
+
+
+## Exercises   
+
+1. We want to compute several summary statistics on each quantitative variable in a data frame and organize the results in a new data frame (rows = variables, columns = summary statistics).
+
+- Write a function called `summ_stats()` that takes a numeric vector `x` as input and returns the mean, median, standard deviation, and IQR as a data frame. You can use `tibble()` to create the data frame.
+    - Example: `tibble(a = 1:2, b = 2:3)` creates a data frame with variables `a` and `b`.
+- Use a `map*()` function from `purrr` to get the summary statistics for each quantitative variable in `diamonds`.
+- Look up the `bind_rows()` documentation from `dplyr` to combine summary statistics for all quantitative variables into one data frame.
+    - Note: You'll notice that the variable names are not present in the output. Try to figure out a way to add variable names back in with `mutate()` and `colnames()`.
+    
+    
+Once you've done that with `map()`, write a `for` loop to achieve the same result. Which do you prefer in terms of ease of code writing and readability?
+
+
+
+
+## Iteration with `map2` or `pmap` 
+
+If you need to iterate over the **rows of a data frame**, we'll need other versions of `map`(). 
+
+
+`purrr` also offers `map2()` and the `pmap()` family of functions that take multiple inputs and loops over them simultaneously. 
+
+Let's look at the [`purrr` cheatsheet](https://rstudio.github.io/cheatsheets/purrr.pdf) to look at graphical representations of how these functions work.
+
+
+Let's look at this code to randomly simulate data from Normal distributions.
+
+```{r pmap_ex1}
+args <- tibble(
+  n = c(100, 100, 100, 100), # this is n
+  mean = c(0, 1, 2, 3),            # this is mean
+  sd = c(4, 3, 2, 1)            # this is sd
+)
+
+# save randomly generated data in tibble with simulation parameters
+sim_data <- args |>
+  mutate(rand_data = pmap(args, rnorm))
+
+sim_data
+```
+
+Note how the column names in `args` exactly match the argument names in `rnorm()`. 
+
+The iteration that is happening is across rows, and the multiple arguments in `rnorm()` are being matched by name.
+
+
+To access the information in that `rand_data` list, we need to `unnest()` this list! It converts/unfolds the information into a numeric vector (repeating the information in `mean`, `sd`, `n`)
+
+```{r}
+unnested_sim <- sim_data |> 
+  unnest(rand_data) # convert the rand_data list to numeric vector
+  
+  
+unnested_sim |> 
+  ggplot(aes(x = rand_data, group = mean, fill = factor(mean))) +
+  geom_density(alpha = .5)
+```
+
+
+We can also use `pmap()` to specify variations in some arguments but leave some arguments constant across the iterations:
+
+```{r pmap_ex2}
+string_data <- tibble(
+    pattern = c("p", "n", "h"),
+    replacement = c("P", "N", "H")
+)
+
+pmap_chr(string_data, str_replace_all, string = "ppp nnn hhh")
+```
+
+
+## Exercises 
+
+1. Create 2 small examples that show how `pmap()` works with `str_sub()`. Your examples should:
+
+- Use different arguments for `string`, `start`, and `end`
+- Use different arguments for `start` and `end` but a fixed `string`
+
+```{r}
+
+```
+
+2. Last class we worked on an extended exercise where our goal was to write a series of functions and a `for` loop to repeat linear model fitting under different "settings" (removal of outliers, model formula choice). 
+
+Repeat this exercise using `pmap()`.
+
+- You'll need to use the `df_arg_combos` object, your `remove_outliers()` function, and your `fit_model()` function.
+- Review the solutions below for the necessary parts and make sure you understand each part. 
+- Then, try to put it all together using `pmap()`.
+
+```{r}
+xs <- diamonds |> select(carat, cut, clarity, color) |> names()
+
+
+df_arg_combos <- crossing(
+    mod_formula = str_c("price ~ ", map_chr(seq_along(xs), ~ str_c(xs[1:.x], collapse = " + ")) ),
+    remove_outliers = c(TRUE, FALSE)
+)
+df_arg_combos
+
+
+remove_outliers <- function(data, what_var, sd_thresh) {
+    data |> 
+        mutate(zscore = ({{ what_var }} - mean({{ what_var }}, na.rm = TRUE))/sd({{ what_var }}, na.rm = TRUE)) |>
+        filter(zscore <= sd_thresh)
+}
+
+fit_model <- function(data, mod_formula, remove_outliers) {
+    if (remove_outliers) {
+        data_clean <- remove_outliers(data, what_var = carat, sd_thresh = 3)
+    } else {
+        data_clean <- data
+    }
+    
+    lm(mod_formula, data = data_clean)
+}
+
+# use pmap()
+
+
+
+
+```
+
+## Iteration with `walk` 
+
+
+If we don't care about saving an output for each iteration, we can use the family of `walk()` functions (`walk`, `walk2`, and `pwalk`) to apply a function to each element of a list or vector with no output. 
+
+Let's say, we wanted to visualize the relationship between `carat` and `price` by clarity. 
+
+If we wanted a fully stratified (fully separated) analysis, we could create one visualization per clarity category and save it separately.
+
+
+First, let's create separate datasets that are still contained in one tibble.
+
+```{r}
+# Let's create separate datasets within one tibble
+by_clarity <- diamonds |> 
+  group_nest(clarity)
+
+by_clarity
+```
+
+```{r}
+# Create a variable with a image path
+by_clarity <- by_clarity |> 
+  mutate(path = str_glue("diamonds-{clarity}.png"))
+
+by_clarity
+```
+
+```{r}
+# plot for making a scatterplot
+carat_scatter <- function(df) {
+  ggplot(df, aes(x = carat, y = price)) + geom_point()  
+}
+
+# Create a "variable" with each plots
+by_clarity <- by_clarity |> 
+  mutate(plot = map(data, carat_scatter)) # iterate over data to create ggplot output
+```
+
+```{r}
+# Iterate over paths and plots to save the export images
+walk2( 
+  by_clarity$path,
+  by_clarity$plot,
+  function(path, plot){ ggsave(path, plot, width = 6, height = 6)}
+)
+
+```
+
+
+## Additional Resources 
+
+If you are interested in having a deeper understanding of the `purrr` package, I recommend you check out:
+
+- [Functionals Chapter in Advanced R](https://adv-r.hadley.nz/functionals.html) by Hadley Wickham
+## Done!
+
+- Check the ICA Instructions for how to (a) push your code to GitHub and (b) update your portfolio website
+

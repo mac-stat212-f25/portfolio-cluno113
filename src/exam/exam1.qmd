@@ -1,0 +1,307 @@
+---
+title: "exam1"
+format: html
+---
+
+# 1 Introduction  
+# 2 Review  
+```{r echo=FALSE}
+library(tidyverse)
+weather <- read_csv("../../data/raw/weather.csv")
+
+# Clean the PrecipYr by replacing 99999 with NA
+weather_clean <- weather |> 
+    mutate(PrecipYr = na_if(PrecipYr, 99999))
+
+# Add dateInYear variable
+# Option 1
+# weather_clean <- weather_clean |> 
+#     arrange(Month, Day) |> 
+#     mutate(dateInYear = 1:365)
+# Option 2
+weather_clean <- weather_clean |> 
+    mutate(dateInYear = yday(mdy(date)))
+
+# Add in 3-letter month abbreviations
+# Option 1: via joins
+months <- tibble(
+    Month = 1:12,
+    month_name = month.abb
+)
+weather_clean <- weather_clean |> 
+    left_join(months)
+
+# Option 2: via vector subsetting
+# weather |> 
+#     mutate(month_name = month.abb[Month]) |> head()
+
+# write_csv(weather_clean, file = "../../data/processed/weather_clean.csv")
+```
+# Adv Data Viz
+```{r}
+library(dplyr)
+library(tidyverse)
+library(lubridate)
+library(readr)
+
+weather_clean <- weather_clean |> 
+  janitor::clean_names()
+
+weather_clean$date_in_year <- as.Date(weather_clean$date_in_year - 1, origin = "2021-01-01")
+
+temp <- ggplot(weather_clean, aes(x = date_in_year)) +
+  geom_linerange(aes(
+    ymin = record_low,
+    ymax = record_high),
+    color = "#ECEBE3") +
+  geom_linerange(aes(
+    ymin = normal_low,
+    ymax = normal_high),
+    color = "#C8B8BA") +
+  geom_linerange(aes(
+    ymin = low,
+    ymax = high),
+    color = "#A90248") +
+  scale_x_date(
+    date_labels = "%b",        # Short month names (Jan, Feb, ...)
+    date_breaks = "1 month"    # Tick every month
+  ) +
+  theme_classic() +
+  theme(axis.title = element_blank(),
+    axis.text.y = element_text(size = 8),
+    axis.text.x = element_text(size = 9),
+    panel.grid = element_blank())
+
+prec <- ggplot(weather_clean) +
+  geom_area(aes(x = date_in_year, y = culm_prec), fill = "#ebeae2", color = "#32a3d8") +
+  geom_point(
+    data = subset(weather_clean, record_precip == TRUE),
+    aes(y = culm_prec),
+    shape = 17,
+    size = 2,
+    color = "#32a3d8"
+  ) +
+  scale_x_date(date_labels = "%b", date_breaks = "1 month") +
+  theme_classic()
+```
+
+```{r}
+library(patchwork)
+temp / prec + plot_layout(widths = c(2, 1), heights = c(3, 1))
+```
+
+# 6 Adv Data Wrangling P1
+
+Logicals  
+```{r}
+x <- c(TRUE, FALSE, NA)
+x
+class(x)
+```
+
+You will often create logical vectors with comparison operators: >, <, <=, >=, ==, !=.  
+```{r}
+x <- c(1, 2, 9, 12)
+x < 2
+x <= 2
+x > 9
+x >= 9
+x == 12
+x != 12
+```
+When you want to check for set containment, the %in% operator is the correct way to do this (as opposed to ==).
+```{r}
+x <- c(1, 2, 9, 4)
+x == c(1, 2, 4)
+x %in% c(1, 2, 4)
+```
+
+The Warning: longer object length is not a multiple of shorter object length is a manifestation of vector recycling.
+
+In R, if two vectors are being combined or compared, the shorter one will be repeated to match the length of the longer one–even if longer object length isn’t a multiple of the shorter object length. We can see the exact recycling that happens below:
+
+```{r}
+x <- c(1, 2, 9, 4)
+x == c(1, 2, 4)
+x == c(1, 2, 4, 1) # This line demonstrates the recycling that happens on the previous line
+```
+
+Logical vectors can also be created with functions. is.na() is one useful example:
+
+```{r}
+x <- c(1, 4, 9, NA)
+x == NA
+is.na(x)
+```
+
+We can negate a logical object with !. We can combine logical objects with & (and) and | (or).
+
+```{r}
+x <- c(1, 2, 4, 9)
+x > 1 & x < 5
+!(x > 1 & x < 5)
+x < 2 | x > 8
+```
+
+We can summarize logical vectors with:
+
+any(): Are ANY of the values TRUE?
+all(): Are ALL of the values TRUE?
+sum(): How many of the values are TRUE?
+mean(): What fraction of the values are TRUE?
+
+```{r}
+x <- c(1, 2, 4, 9)
+any(x == 1)
+all(x < 10)
+sum(x == 1)
+mean(x == 1)
+```
+
+if_else() and case_when() are functions that allow you to return values depending on the value of a logical vector. You’ll explore the documentation for these in the following exercises.
+
+Note: ifelse() (from base R) and if_else() (from tidyverse) are different functions. We prefer if_else() for many reasons (examples below).
+
+Noisy to make sure you catch issues/bugs
+Can explicitly handle missing values
+Keeps dates as dates
+
+```{r}
+x <- c(-1, -2, 4, 9, NA)
+
+ifelse(x > 0, 'positive', 'negative')
+if_else(x > 0, 'positive', 'negative')
+
+
+ifelse(x > 0, 1, 'negative') # Bad: doesn't complain with combo of data types
+# if_else(x > 0, 1, 'negative') # Good:noisy to make sure you catch issues
+
+if_else(x > 0, 'positive', 'negative', missing = 'missing') # Good: can explicitly handle NA
+
+fun_dates <- mdy('1-1-2025') + 0:365
+ # ifelse(fun_dates < today(), fun_dates + years(), fun_dates) # Bad: converts dates to integers
+ # if_else(fun_dates < today(), fun_dates + years(), fun_dates) # Good: keeps dates as dates
+```
+
+```{r}
+data(diamonds)
+diamonds <- diamonds |> 
+    slice_head(n = 1000)
+
+# Subset to diamonds that are less than 400 dollars or more than 10000 dollars.
+diamonds |> 
+    filter(price < 400 | price > 10000)
+
+# Subset to diamonds that are between 500 and 600 dollars (inclusive).
+diamonds |> 
+    filter(price >= 500, price <= 600)
+
+# How many diamonds are of either Fair, Premium, or Ideal cut (a total count)? What fraction of diamonds are of Fair, Premium, or Ideal cut?
+# First, do this a wrong way with ==. Predict the warning message that you will receive.
+# Second, do this the correct way with an appropriate logical operator.
+
+# Right way with %in%
+diamonds |> 
+    mutate(is_fpi = cut %in% c("Fair", "Premium", "Ideal")) |> 
+    summarize(num_fpi = sum(is_fpi), frac_fpi = mean(is_fpi))
+
+# Are there any diamonds of Fair cut that are more than $3000? Are all diamonds of Ideal cut more than $2000?
+diamonds |> 
+    filter(cut == "Fair") |> 
+    summarize(any_high = any(price > 3000))
+diamonds |> 
+    filter(cut == "Ideal") |> 
+    summarize(all_high = all(price > 2000))
+
+# Create two new categorized versions of price by looking up the documentation for if_else() and case_when():
+# price_cat1: “low” if price is less than 500 and “high” otherwise
+# price_cat2: “low” if price is less than 500, “medium” if price is between 500 and 1000 dollars inclusive, and “high” otherwise.
+diamonds |> 
+    mutate(
+        price_cat1 = if_else(price < 500, "low", "high"),
+        price_cat2 = case_when(
+            price < 500 ~ "low",
+            price >= 500 & price <= 1000 ~ "medium",
+            price > 1000 ~ "high"
+        )
+    )
+
+```
+Numerical data can be of class integer or numeric (representing real numbers).
+```{r}
+x <- 1:3
+x
+class(x)
+
+x <- c(1+1e-9, 2, 3)
+x
+class(x)
+```
+
+# 7 Adv Data Wrangling P2
+
+```{r}
+library(stringr)
+string1 <- "This is a string"
+string2 <- 'If I want to include a "quote" inside a string, I use single quotes'
+string3 <- c(string1, string2) # string / character vector (of greater than length 1)
+
+str_view(string1, html = TRUE)
+```
+
+\t (Creates a tab)
+\n (Creates a newline)
+
+Creating Strings
+```{r}
+df_dates <- tibble(
+    year = c(2000, 2001, 2002),
+    month = c("Jan", "Feb", "Mar"),
+    day = c(3, 4, 5)
+)
+
+df_dates |>
+    mutate(
+        date1 = str_c(month, "-", day, "-", year),
+        date2 = str_glue("{month}-{day}-{year}")
+    )
+```
+
+Extracting Information with String
+```{r}
+df <- tibble(
+    word_id = 1:3,
+    word = c("replace", "match", "pattern")
+)
+
+df |>
+    mutate(
+        word_length = str_length(word),
+        middle_pos = ceiling(word_length/2),
+        middle_letter = str_sub(word, middle_pos, middle_pos)
+    )
+```
+
+Finding patterns in strings with regular expressions
+```{r}
+# This regex finds "a" then "b" at most once (can't have 2 or more b's in a row)
+str_view(c("a", "ab", "abb"), "ab?")
+
+# There has to be an "a" followed by at least one b
+# This is why the first string "a" isn't matched
+str_view(c("a", "ab", "abb"), "ab+")
+
+# There must be an "a" and then any number of b's (including zero)
+str_view(c("a", "ab", "abb"), "ab*")
+
+str_view(words, "[aeiou][aeiou]m")
+
+str_view(fruit, "aa|ee|ii|oo|uu")
+
+# Words that start with y
+str_view(words, "^y")
+
+# Words that don't start with y
+str_view(words, "^[^y]")
+```
+

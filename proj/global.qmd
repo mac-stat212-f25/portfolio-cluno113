@@ -1,0 +1,84 @@
+---
+title: "global"
+format: html
+---
+
+```{r}
+library(sf)
+library(dplyr)
+library(tidyr)
+library(units)
+library(spdep)
+library(tmap) # Load tmap for plotting
+```
+
+```{r}
+library(readr)
+tracts_file <- "nyct2020_25d/nyct2020.shp"
+sightings_file_input <- "rat_sightings_with_tract_id.csv"
+output_file_spatial <- "nyc_rat_density.geojson"
+output_file_map <- "nyc_rat_density_choropleth.png"
+nyc_tracts <- st_read(tracts_file)
+
+sightings_df <- read.csv(sightings_file_input)
+
+sightings_df <- sightings_df %>%
+  dplyr::mutate(GEOID = as.character(GEOID))
+
+rat_counts <- sightings_df %>%
+  dplyr::filter(!is.na(GEOID)) %>%
+  dplyr::group_by(GEOID) %>%
+  dplyr::summarise(Rat_Count = n(), .groups = 'drop')
+
+nyc_tracts <- nyc_tracts %>%
+  dplyr::mutate(GEOID = as.character(GEOID))
+
+nyc_tracts_with_counts <- nyc_tracts %>%
+  dplyr::left_join(rat_counts, by = "GEOID") %>%
+  dplyr::mutate(Rat_Count = tidyr::replace_na(Rat_Count, 0)) %>%
+  st_as_sf()
+
+nyc_tracts_with_counts <- st_make_valid(nyc_tracts_with_counts)
+nyc_tracts_with_counts$Area_SqM <- st_area(nyc_tracts_with_counts)
+nyc_tracts_with_counts$Area_SqKM <- units::set_units(nyc_tracts_with_counts$Area_SqM, "km^2")
+nyc_tracts_with_counts <- nyc_tracts_with_counts %>%
+  dplyr::mutate(Rat_Density = Rat_Count / as.numeric(Area_SqKM))
+
+tracts_sp <- as(nyc_tracts_with_counts, "Spatial")
+tracts_nb <- poly2nb(tracts_sp, queen = TRUE)
+tracts_lw <- nb2listw(tracts_nb, style = "W", zero.policy = TRUE)
+
+moran_test <- moran.test(nyc_tracts_with_counts$Rat_Density, tracts_lw, zero.policy = TRUE)
+print(moran_test)
+
+rat_map <- tm_shape(st_as_sf(nyc_tracts_with_counts)) +
+  # Fill the polygons based on the Rat_Density variable
+  tm_fill(
+    col = "Rat_Density",
+    title = "Rat Sightings per Sq. Km",
+    style = "quantile", # Classify the data into five equal groups for visual contrast
+    palette = "Reds", # Use a single-hue color scale
+    n = 5,
+    legend.hist = TRUE
+  ) +
+  # Draw the borders of the tracts
+  tm_borders(col = "grey", lwd = 0.5) +
+  # Add map elements (compass, scale bar, title)
+  tm_compass(position = c("right", "top"), type = "4star", size = 2) +
+  tm_scale_bar(position = c("left", "bottom"), breaks = c(0, 5, 10)) +
+  tm_layout(
+    title = "NYC Rat Sighting Density by Census Tract",
+    title.position = c("right", "bottom"),
+    title.size = 1.2,
+    legend.position = c("left", "top"),
+    frame = FALSE
+  )
+
+```
+```{r}
+rat_map
+
+summarize(rat_counts)
+```
+
+

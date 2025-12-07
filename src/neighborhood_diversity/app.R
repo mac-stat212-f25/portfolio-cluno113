@@ -1,0 +1,89 @@
+#
+# This is a Shiny web application. You can run the application by clicking
+# the 'Run App' button above.
+#
+# Find out more about building applications with Shiny here:
+#
+#    https://shiny.posit.co/
+library(shiny)
+library(tidyverse)
+library(sf)
+library(plotly)
+library(readr)
+library(dplyr)
+library(leaflet)
+
+data_by_dist <- read_rds("data/diverse_data_by_dist.rds")
+data_by_year <- read_csv("data/diverse_data_by_year.csv")
+metro_names <- data_by_dist |> pull(metro_name) |> unique()
+
+# Define UI for application that draws a histogram
+ui <- fluidPage(
+
+    # Application title
+    titlePanel("Neighborhood Diversity"),
+
+    # Sidebar with a slider input for number of bins
+    sidebarLayout(
+
+        sidebarPanel(
+
+          selectInput(
+              "city",
+              "City Name",
+              metro_names,
+              selected = metro_names[1],
+              multiple = FALSE
+            ),
+
+            sliderInput(
+                        inputId = "span",
+                        label = "Span parameter:",
+                        min = 0.1,
+                        max = 1,
+                        value = 0.5,
+                        step = 0.05)
+        ),
+
+        # Show a plot of the generated distribution
+        mainPanel(
+           plotOutput("distPlot")
+        )
+    )
+)
+
+# Define server logic required to draw a histogram
+server <- function(input, output) {
+
+    output$distPlot <- renderPlot({
+        city_data <- data_by_year |> filter(metro_name == input$city)
+
+        fig <- ggplot(city_data) +
+          geom_point(alpha = 0.4, aes(distmiles, entropy)) +
+          theme_minimal(base_size = 14) +
+          stat_smooth(aes(distmiles, entropy),
+                      color = 'red', method = 'loess', span = input$span, se = FALSE) +
+          labs(x = "Distance from city hall (miles)",
+               y = "")
+
+        pal <- colorNumeric('Reds', NULL)
+
+        map <- leaflet(city_data) %>%
+          addProviderTiles('CartoDB.Positron') %>%
+          clearShapes() %>%
+          addPolygons(stroke = FALSE, smoothFactor = 0,
+                      fillColor = ~pal(entropy), fillOpacity = 0.7,
+                      layerId = ~tract_id) %>%
+          addLegend(position = 'bottomright', pal = pal,
+                    values = data_by_dist$entropy, title = 'Score')
+
+        fig
+        map
+
+    })
+}
+
+# Run the application
+shinyApp(ui = ui, server = server)
+
+

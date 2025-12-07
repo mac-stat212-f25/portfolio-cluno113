@@ -1,0 +1,418 @@
+---
+title: "16 Databases and SQL"
+---
+
+## 🧩 Learning Goals
+
+By the end of this lesson, you should be able to:
+- Develop comfort in composing SQL queries
+- See the connections between `tidyverse` verbs and SQL clauses
+
+
+```{r setup_16, echo=FALSE, message=FALSE}
+library(tidyverse)
+library(DBI)
+library(duckdb)
+library(nycflights13)
+```
+
+
+## Introduction
+
+If you find yourself analyzing data within a medium or large organization, you will probably draw on data stored within a centralized [data warehouse](https://en.wikipedia.org/wiki/Data_warehouse).
+
+
+Data warehouses contain vast collections of information--far more than a desktop or laptop computer can easily analyze. 
+
+These warehouses typically rely on structured data repositories called **relational databases** (also often called **SQL databases**).
+
+
+Relational databases store data in **tables**, which are structured with rows and columns (attributes). Tables can be joined using **keys** which uniquely identify a row within a table.
+
+
+## Connecting to a database in R with `DBI`
+
+The `DBI` package (**d**ata**b**ase **i**nterface) provides general tools for interacting with databases from R. 
+
+- It is also common for data scientists to interact with databases directly by writing SQL queries. We'll talk about this in the next section.
+
+
+For now, we'll use `DBI` to connect with an **in-process** database (`duckdb`), one that runs locally on your computer. 
+
+- A nice feature of `duckdb` is that even if your dataset is huge, `duckdb` can work with it very quickly.
+
+
+We can set up a database connection with `dbConnect()` and initialize a temporary database with `duckdb()`:
+
+```{r}
+con <- DBI::dbConnect(duckdb::duckdb())
+class(con)
+```
+
+
+In a real project, we would use `duckdb_read_csv()` to store data directly into the `duckdb` database without first having to read it into R. 
+
+In the toy example below, we have a dataset on Spotify songs (`all_spotify_songs.csv`) and store in a database table called `"songs"`:
+
+```{r eval=FALSE}
+duckdb_read_csv(con, "songs", "https://hash-mac.github.io/stat212site-f25/relative/path/to/all_spotify_songs.csv")
+```
+
+
+Here, we'll use datasets from the `nycflights13` package. 
+
+The `DBI` package provides the `dbWriteTable()` function to write dataset objects (in constrast to csv files) to a database:
+
+```{r}
+dbWriteTable(con, "flights", nycflights13::flights)
+dbWriteTable(con, "planes", nycflights13::planes)
+```
+
+We can use `tbl()`, short for table, to create connections individually to the `flights` and `planes` datasets.
+
+```{r}
+flights <- tbl(con, "flights")
+planes <- tbl(con, "planes")
+```
+
+
+Note that the results of `tbl()` are not quite the same as our normal data frames. 
+
+Although they have class `tbl`, note that the number of rows is `NA`! 
+
+
+The full dataset isn't loaded into memory when we use `tbl`, so the number of rows is unknown. This behavior is purposeful--it reduces computer resources and allows access to parts of the data only when needed.
+
+```{r}
+class(flights)
+dim(flights)
+```
+
+
+## What is SQL? 
+
+SQL stands for Structured Query Language. 
+
+It is a programming language to query or retrieve data from a relational database. 
+
+
+## SQL with `dplyr`
+
+A really nice feature of `dplyr` is that we can write R code for wrangling the data and use `show_query()` to translate that code into SQL.
+
+```{r}
+flights |>
+    show_query()
+
+flights |>
+    mutate(full_date = str_c(year, month, day, sep = "-")) |>
+    show_query()
+```
+
+
+**Explore:** Create a Google Document and share it with the people at your table. Using the code examples below, work with your group to co-create a `dplyr`<-> SQL translation guide (notes document) that allows you to answer the following:
+
+- What do `SELECT`, `FROM`, `WHERE`, `GROUP BY`, and `ORDER BY` in SQL do? (These uppercase words are called **clauses** in SQL.) 
+  - How do these clauses translate to the main `tidyverse` verbs `select`, `mutate`, `filter`, `arrange`, `summarize`, `group_by`?
+- What syntax differences are there for logical comparisons? 
+  - How do the `&` and `|` logical operators in R compare to SQL?
+- How does the R syntax for `mutate` translate to SQL?
+- How does joining datasets seem to work in SQL?
+
+
+
+```{r}
+flights |> 
+    filter(dest == "IAH") |> 
+    arrange(dep_delay) |> 
+    show_query()
+
+flights |> 
+    filter(dest == "IAH") |> 
+    arrange(dep_delay) |> 
+    head(n = 10) |> 
+    show_query()
+
+flights |> 
+    filter(dest == "IAH" & origin == "JFK") |> 
+    arrange(dep_delay) |> 
+    show_query()
+
+flights |> 
+    filter(dest == "IAH" | origin == "JFK") |> 
+    arrange(year, month, day, desc(dep_delay)) |> 
+    show_query()
+```
+
+```{r}
+flights |> 
+    filter(dest %in% c("IAH", "HOU")) |> 
+    show_query()
+
+flights |> 
+    filter(!is.na(dep_delay)) |> 
+    show_query()
+```
+
+```{r}
+planes |> 
+    select(tailnum, type, manufacturer, model, year) |> 
+    show_query()
+
+planes |> 
+    select(tailnum, type, manufacturer, model, year) |> 
+    rename(year_built = year) |> 
+    show_query()
+```
+
+```{r}
+flights |> 
+    mutate(
+        speed = distance / (air_time / 60)
+    ) |> 
+    show_query()
+```
+
+```{r}
+flights |> 
+    left_join(planes, by = "tailnum") |> 
+    show_query()
+```
+
+
+
+## SQL Practice
+
+### Stack Exchange Data Explorer 
+
+We will experiment with the [Stack Exchange Data Explorer](https://data.stackexchange.com/), a website that provides a SQL interface for all the data in StackExchange. 
+
+StackExchange powers the StackOverflow programming question and answer site, but it also powers question and answer sites related to [126 topics](https://stackexchange.com/sites?view=grid) including [English](https://english.stackexchange.com/), [Travel](https://travel.stackexchange.com/), [Bicycles](https://bicycles.stackexchange.com/), and [Parenting](https://parenting.stackexchange.com/). 
+
+StackExchange provides an in-depth [Data Explorer Tutorial](https://data.stackexchange.com/help). We start with this interface to construct SQL queries on the [Travel Data Explorer](https://data.stackexchange.com/travel/queries).
+
+
+### Instructions 
+
+Head to the [Stack Exchange Data Explorer for Travel](https://data.stackexchange.com/travel/queries). 
+
+
+You will see a list of queries other users have created in the past. These queries are for all Stack Exchange sites, so some may not be relevant. Queries about *your* activity (for example, "How many upvotes do I have for each tag?") will not be useful either if you do not have activity for the particular site. 
+
+
+Click on one of them and you see the SQL code for the query. 
+
+Then click the "Run Query" button to get results. 
+
+For example, you might look at the number of [up vs down votes for questions and answers by weekday](https://data.stackexchange.com/travel/query/1718/up-vs-down-votes-by-day-of-week-of-question-or-answer) and notice that for questions, Tuesday has the highest up vs. down vote ratio and Saturday has the lowest. You can contemplate hypotheses for this difference!
+
+
+### Select Queries 
+
+Let's experiment with our own queries. 
+
+Click on "Compose Query" in the upper right, and notice the tables are shown in the right. 
+
+As a reminder, a table is similar to a data frame. 
+
+- Each table lists the columns stored within the table and the data types for the columns. 
+- Look through the tables for Posts, Users, and Comments. 
+- Do the columns generally make sense, and correspond to the StackOverflow website? 
+
+
+There's a  [description of the tables and columns](https://meta.stackexchange.com/a/2678) (called a schema) available on StackExchange's Meta Q&A Site. 
+
+Now enter your first query in the text box and click the "Run Query" button:
+
+```{sql eval=FALSE}
+SELECT TOP(100) Id, Title, Score, Body, Tags
+FROM Posts
+```
+
+In this query we already see several important features of SQL:
+
+- `SELECT` tells SQL that a query is coming.
+- `TOP(100)` only returns the first 100 rows.
+    - Note: The StackExchange data explorer uses a variant of SQL called [Transact SQL](https://en.wikipedia.org/wiki/Transact-SQL) that is supported by Microsoft databases. `TOP(100)` is a non-standard SQL feature supported by T-SQL. For most databases you would accomplish the same goal by adding `LIMIT 100` to the end of the query.
+- `Id, Title, Score, Body, Tags` determines what columns are included in the result
+- `FROM Posts` determines the source dataset.
+
+
+From glancing at the results, it appears that this table contains both questions and answers. 
+
+Let's try to focus on answers. 
+
+Looking again at the [Schema Description](https://meta.stackexchange.com/a/2678), notice that there is a `PostTypeId` column in `Posts`, and a value of `1` corresponds to questions. 
+
+Let's update our query to only include questions:
+
+```{sql eval=FALSE}
+SELECT TOP(100)
+Id, Title, Score, Body, Tags
+FROM Posts
+WHERE PostTypeId = 1
+```
+
+The SQL command `WHERE` is like the `filter` command we have been using in `dplyr`.
+
+- Note that whereas we used the double equals `==` for comparison in `R`, the SQL `WHERE` command takes just a single `=`.
+
+**Exercise:** Find the title and score of Posts that have a score of at least 110. *Hint: TOP is not necessary here because you want all result rows.*
+
+```{sql eval=FALSE}
+SELECT Title, Score
+FROM Posts
+WHERE PostTypeId = 1 AND Score >= 110
+```
+
+**Exercise:** Find posts whose title contains some place you are interested in (you pick!). *Hint: use SQL's [LIKE operator](http://www.sqltutorial.org/sql-like/).*
+
+
+```{sql eval=FALSE}
+SELECT Title, Score
+FROM Posts
+WHERE PostTypeId = 1 AND Title LIKE '%Paris%'
+```
+
+
+Note that you can look up the actual webpage for any question using its `Id`. 
+
+For example, if the `Id` is 19591, the webpage [URL](https://en.wikipedia.org/wiki/URL) would be <https://travel.stackexchange.com/questions/19591/>. Look up a few of the questions by their `Id`. 
+
+It's unclear how the 100 questions we saw were selected from among the over 43,000 total questions.
+
+- To count the number of posts, we can use `COUNT` in SQL: `SELECT COUNT(Id) FROM Posts Where PostTypeId = 1`.
+
+
+Let's try to arrange the Posts by score. 
+
+
+```{sql eval=FALSE}
+SELECT TOP(100)
+Id, Title, Score, Body, Tags
+FROM Posts
+WHERE PostTypeId = 1
+ORDER BY Score DESC
+```
+
+The `ORDER BY ??? DESC` syntax is similar to R's `arrange()`. You can leave off the `DESC` if you want the results ordered smallest to largest.
+
+
+We could also find the [highest rated questions tagged "italy"](https://travel.stackexchange.com/questions/tagged/italy):
+
+```{sql eval=FALSE}
+SELECT TOP(100)
+Id, Title, Score, Body, Tags
+FROM Posts
+WHERE PostTypeId = 1 AND Tags LIKE '%italy%'
+ORDER BY Score DESC
+```
+
+
+**Exercise:** Pick two tags that interest you and you think will occur together and find the top voted posts that contain both.
+
+
+```{sql eval=FALSE}
+SELECT Title, Score, Tags
+FROM Posts
+WHERE PostTypeId = 1 AND Tags LIKE '%paris%' AND Tags LIKE '%france%'
+```
+
+
+### SQL Summarization 
+
+So far, we have covered the equivalent of R's selecting, filtering, and arranging. 
+
+Let's take a look at grouping and summarizing now, which has similar structures in both `R` and SQL. Imagine we want to see how many posts of each type there are. This query shows us that there are 44K questions and 71K answers.
+
+```{sql eval=FALSE}
+SELECT 
+PostTypeId, COUNT(Id) numPosts
+FROM posts
+GROUP BY PostTypeId 
+ORDER BY PostTypeId
+```
+
+Note two characteristics of SQL summarization here:
+
+- The `GROUP BY`clause indicates the table column for grouping, much like R's `group_by`.
+- There is no explicit `summarize`. Instead, all columns that appear in the SELECT except for those listed in `GROUP BY` must make use of an aggregate function. `COUNT(*)` is one of these, and is the equivalent of R's `n()`. Many other [aggregate functions](https://docs.microsoft.com/en-us/sql/t-sql/functions/aggregate-functions-transact-sql) exist, including `MAX`, `SUM`, `AVG`, and many others. Every aggregate function requires a column as an argument (even `COUNT()` which doesn't logically need one).
+- The aggregate column (in this case `COUNT(Id)`) must immediately be followed by a name that will be used for it in the results (in this case `numPosts`). This can be particularly useful if you want to order by the aggregated value.
+
+**Exercise:** Change the previous query so it orders the result rows by the number of posts of that type. *Hint: Reuse the name you assigned to the aggregate function.*
+
+
+
+
+**Exercise:** Find the most commonly used tagsets (sets/combinations of tags) applied to posts. Note that this is not asking you to count the most common individual tags --- this would be more complex because multiple tags are squashed into the Tags field.
+```{sql eval=FALSE}
+SELECT
+Tags, COUNT(Tags) numTagsets
+FROM posts
+GROUP BY Tags
+ORDER BY numTagsets
+```
+
+
+
+
+
+### SQL Joins 
+
+Finally, as with `R`, we often want to join data from two or more tables. The types of joins in SQL are the same as we saw with R (inner, outer, left, right). Most commonly we want to perform an INNER join, which is the default if you just say `JOIN`. (We can look up the `inner_join()` documentation to remind ourselves what an inner join does.)
+
+Let's say we wanted to enhance the earlier query to find the highest scoring answers with some information about each user. 
+
+```{sql eval=FALSE}
+SELECT TOP(100)
+Title, Score, DisplayName, Reputation
+FROM Posts p
+JOIN Users u
+ON p.OwnerUserId = u.Id
+WHERE PostTypeId = 1
+ORDER BY Score Desc
+```
+
+We see a few notable items here:
+
+- The `JOIN` keyword must go in between the two tables we want to join.
+- Each table must be named. In this case we named posts `p` and users `u`.
+- We need to specify the relationship that joins the two tables. In this case, a posts `OwnerUserId` column refers to the `Id` column in the users table.
+
+**Exercise:** Create a query similar to the one above that identifies the authors of the top rated comments instead of posts.
+```{sql eval=FALSE}
+SELECT TOP(100)
+Text, Score, DisplayName, Reputation, AboutMe, Views, UpVotes, DownVotes
+FROM Comments c
+JOIN Users u
+ON c.UserId = u.Id
+ORDER BY Score Desc
+```
+
+
+
+If you want more practice, go to <https://mystery.knightlab.com/>.
+
+## Going Beyond
+
+### Exploring cloud DBMS's
+
+[Redshift](https://aws.amazon.com/redshift/) is Amazon's cloud database management system (DBMS).
+
+- To try out Redshift, you can sign up for a free [AWS Educate](https://aws.amazon.com/education/awseducate/) account. Once your account is confirmed, you will have access to many tutorials about cloud computing.
+- In the Getting Started section of your [AWS Educate main page](https://www.awseducate.com/student/s/), navigate to the [Getting Started with Databases (Lab)](https://awseducate.instructure.com/courses/912) tutorial on the second page of tutorials.
+- Various Redshift resources can be found [here](https://aws.amazon.com/redshift/getting-started/).
+
+
+[BigQuery](https://cloud.google.com/bigquery/) is Google's DBMS.
+
+- BigQuery can be tried for free through [Big Query sandbox](https://cloud.google.com/blog/products/data-analytics/query-without-a-credit-card-introducing-bigquery-sandbox).
+- On the [main BigQuery page](https://cloud.google.com/bigquery/) you'll see a big blue button that says "Try BigQuery free".
+- On the cloud welcome page under the Products section, you'll see a button for "Analyze and manage data - BigQuery".
+- Accessing public data within BigQuery
+    - In your "Welcome to BigQuery Studio!" window, you'll see a "Try the Google Trends Demo Query" section.
+    - Click the "Open this query" blue button to get an example SQL statement for the Google Trends dataset. You'll also see on the left panel a list of all public datasets available through BigQuery.
+## Done!
+
+- Check the ICA Instructions for how to (a) push your code to GitHub and (b) update your portfolio website
+

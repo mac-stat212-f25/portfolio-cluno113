@@ -1,0 +1,149 @@
+---
+title: "04-adv-maps-1-notes"
+format: html
+---
+
+```{r}
+#Install these packages first
+
+# install.packages(c("sf","elevatr","terra","stars","tidycensus"))
+# install.packages('devtools')
+# devtools::install_github("ropensci/USAboundaries")
+# install.packages("USAboundariesData", repos = "https://ropensci.r-universe.dev", type = "source")
+
+
+library(tidyverse)
+library(sf) # tools for working with spatial vector data (GIS functionality, mapping)
+library(elevatr) # access to raster elevation maps
+library(terra)
+library(stars)
+library(tidycensus) # spatial data for the US with census information
+library(USAboundaries) # access to boundaries for US states, counties, zip codes, and congressional districts 
+```
+
+```{r}
+# The sf package comes with a North Carolina shapefile:
+nc <- st_read(system.file("shape/nc.shp", package = "sf"))
+
+# Read in shapefiles just downloaded
+mn_cities <- st_read("../data/shp_loc_pop_centers/city_and_township_population_centers.shp")
+mn_water <- st_read("../data/shp_water_lakes_rivers/LakesAndRivers.shp")
+
+class(nc)
+
+class(mn_cities)
+class(mn_water)
+
+st_crs(nc)
+
+ggplot(nc) +
+    geom_sf() +
+    theme_classic() +
+    labs(title = "NAD27")
+```
+
+```{r}
+# Change CRS
+nc_transformed <- nc |> st_transform(crs = "EPSG:32133")
+st_crs(nc_transformed)
+
+ggplot(nc_transformed) +
+    geom_sf() +
+    theme_classic()
+
+transform_and_plot <- function(spatial_obj, new_crs) {
+    spatial_obj |> 
+        st_transform(crs = new_crs) |> 
+        ggplot() +
+            geom_sf() +
+            theme_classic()
+}
+
+# Example usage of this function (using a South Carolina CRS)
+transform_and_plot(nc, new_crs = "EPSG:32133")
+```
+
+```{r}
+library(ggthemes)
+# County Boundaries
+# Load country boundaries data as sf object
+mn_counties <- USAboundaries::us_counties(resolution = "high", states = "Minnesota")
+
+# Take care of duplicate column names (there are two identical "state_name" columns)
+names_counties <- names(mn_counties)
+
+names(mn_counties)[names_counties == "state_name"] <- c("state_name1", "state_name2")
+
+ggplot() +
+    geom_sf(data = mn_counties, fill = "white") + 
+    geom_sf(data = mn_cities |> filter(Population >= 10000), mapping = aes(color = Population, size = Population)) + # cities layer
+    scale_color_viridis_c() + # continuous (gradient) color scale
+    labs(title = "Minnesota Cities with Population >= 10,000") + 
+    ggthemes::theme_map() +
+    theme(legend.position = "bottom") # move legend
+```
+
+```{r}
+ # Elevation Raster
+# elevation <- elevatr::get_elev_raster(mn_counties, z = 5, clip = "bbox")
+# raster::crs(elevation) <- sf::st_crs(mn_counties)
+
+# Convert to data frame for plotting
+# elev_df <- elevation |> terra::as.data.frame(xy = TRUE)
+# colnames(elev_df) <- c("x", "y", "elevation")
+
+# seven_countyarea <- mn_counties |>
+#     filter(name %in% c("Anoka", "Hennepin", "Ramsey", "Dakota", "Carver", "Washington", "Scott")) |> 
+#     st_bbox()
+
+#sf version: 1.0-19
+#elevatr version: 0.99.0
+
+# elevation <- elevatr::get_elev_raster(mn_counties |> st_crop(seven_countyarea), z = 9, clip = "bbox")
+# raster::crs(elevation) <- sf::st_crs(mn_counties)
+
+# Convert to data frame for plotting
+# elev_df <- elevation |> terra::as.data.frame(xy = TRUE)
+
+# colnames(elev_df) <- c("x", "y", "elevation")
+
+# png("../figures/twin_cities_population.png", width = 800, height = 400)
+
+twin_cities_population <- ggplot() +
+    geom_raster(data = elev_df, aes(x = x, y = y, fill = elevation)) + 
+    geom_sf(data = mn_counties, fill = NA, color = "black") + # county boundary layer
+    geom_sf(data = mn_water, fill = "lightsteelblue1", color = "lightsteelblue1") + # NEW: river/lake layer
+    geom_sf(data = mn_cities |> filter(Population >= 10000), mapping = aes(color = Population, size = Population)) + # cities layer
+    scale_color_viridis_c(option = "magma") + # continuous (gradient) color scale
+    scale_fill_gradient(low = "darkgreen", high = "white") + # continuous (gradient) fill scale
+    coord_sf(xlim = seven_countyarea[c("xmin", "xmax")], ylim = seven_countyarea[c("ymin", "ymax")]) + # NEW: crop map to Twin Cities bounding box
+    labs(title = "Twin Cities with Population >= 10,000") + 
+    ggthemes::theme_map() +
+    theme(legend.position = "none") # remove legend
+
+dev.off()
+
+```
+
+```{r}
+library(leaflet)
+
+mn_counties_leaf <- mn_counties |> st_transform(4326) # Leaflet expects this CRS for vectors
+
+mn_cities_leaf <- mn_cities |> st_transform(4326)
+cities_per_county <- st_join(mn_cities_leaf, mn_counties_leaf) |>
+    st_drop_geometry() |> # removes geometry - makes the following calculation more efficient
+    count(name) 
+mn_counties_leaf |> 
+    filter(name %in% c("Anoka", "Hennepin", "Ramsey", "Dakota", "Carver", "Washington", "Scott")) |>
+    left_join(cities_per_county) |>
+    leaflet() |> 
+    addProviderTiles("CartoDB.Positron") |> 
+    addPolygons(
+        color = "#444444", weight = 1, smoothFactor = 0.5, opacity = 1.0,
+        fillOpacity = 0.5, fillColor = ~colorQuantile("YlOrRd", n)(n),
+        highlightOptions = highlightOptions(color = "white", weight = 2, bringToFront = TRUE)) |>
+    addCircles(data = mn_cities_leaf |> filter(County %in% paste(c("Anoka", "Hennepin", "Ramsey", "Dakota", "Carver", "Washington", "Scott"), "County")), color = "#444444")
+```
+
+

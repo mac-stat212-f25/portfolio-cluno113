@@ -1,0 +1,566 @@
+---
+title: "6 Adv Data wrangling P1"
+---
+
+
+## 🧩 Learning Goals
+
+By the end of this lesson, you should be able to:
+
+- Determine the class of a given object and identify concerns to be wary of when manipulating an object of that class (numerics, logicals, factors, dates, strings, data.frames)
+- Explain what vector recycling is, when it can be a problem, and how to avoid those problems
+- Use a variety of functions to wrangle numerical and logical data
+- Extract date-time information using the `lubridate` package
+- Use the `forcats` package to wrangle factor data
+
+
+
+## Helpful Cheatsheets 
+
+RStudio (Posit) maintains a collection of wonderful [cheatsheets](https://rstudio.github.io/cheatsheets/html/data-transformation.html). The following will be helpful:
+
+- [Data transformation with `dplyr`](https://rstudio.github.io/cheatsheets/html/data-transformation.html)
+- [Dates and times with `lubridate`](https://rstudio.github.io/cheatsheets/html/lubridate.html)
+- [Factors with `forcats`](https://rstudio.github.io/cheatsheets/html/factors.html)
+
+**Data Wrangling Verbs (from Stat/Comp 112)**
+
+- `mutate()`: creates/changes columns/elements in a data frame/tibble
+- `select()`: keeps subset of columns/elements in a data frame/tibble
+- `filter()`: keeps subsets of rows in a data frame/tibble
+- `arrange()`: sorts rows in a data frame/tibble
+- `group_by()`: internally groups rows in data frame/tibble by values in 1 or more columsn/elements
+- `summarize()`: collapses/combines information across rows using functions such as `n()`, `sum()`, `mean()`, `min()`, `max()`, `median()`, `sd()`
+- `count()`: shortcut for `group_by() |> summarize(n = n())`
+- `left_join()`: mutating join of two data frames/tibbles keeping all rows in left data frame
+- `full_join()`: mutating join of two data frames/tibbles keeping all rows in both data frames
+- `inner_join()`: mutating join of two data frames/tibbles keeping rows in left data frame that find match in right
+- `semi_join()`: filtering join of two data frames/tibbles keeping rows in left data frame that find match in right
+- `anti_join()`: filtering join of two data frames/tibbles keeping rows in left data frame that do not find match in right
+- `pivot_wider()`: rearrange values from two columns to many(one column becomes the names of new variables, one column becomes the values of the new variables)
+- `pivot_longer()`: rearrange values from many columns to two (the names of the columns go to one new variable, the values of the columns go to a second new variable)
+
+
+```{r doc_setup}
+#| include: false
+library(tidyverse)
+```
+
+
+## Vectors 
+
+An **atomic vector** is a storage container in R where all elements in the container are of the same type. The types that are relevant to data science are:
+
+- `logical` (also known as boolean)
+- numbers
+  - `integer`
+  - `numeric` floating point (also known as double)
+- `character` string 
+- `Date` and date-time (saved as `POSIXct`)
+- `factor`
+
+
+Function documentation will refer to vectors frequently. 
+
+See examples below:
+
+- `ggplot2::scale_x_continuous()`
+    - `breaks`: A **numeric vector** of positions
+    - `labels`: A **character vector** giving labels (must be same length as breaks)
+- `shiny::sliderInput()`
+    - `value`: The initial value of the slider [...] A **length one vector** will create a regular slider; a **length two vector** will create a double-ended range slider.
+
+
+
+When you need a vector, you can create one manually using
+
+- `c()`: the combine function
+
+Or you can create one based on available data using
+
+- `dataset |> mutate(newvar = variable > 5) |> pull(newvar)`: taking one column out of a dataset
+- `dataset |> pull(variable) |> unique()`: taking one column out of a dataset and finding unique values
+
+```{r create_vec_examples}
+c("Fair", "Good", "Very Good", "Premium", "Ideal")
+
+diamonds |> pull(cut) |> unique()
+```
+
+
+
+## Logicals 
+
+
+### Notes 
+
+What does a logical vector look like?
+
+```{r logicals}
+x <- c(TRUE, FALSE, NA)
+x
+class(x)
+```
+
+
+You will often create logical vectors with comparison operators: `>`, `<`, `<=`, `>=`, `==`, `!=`.
+
+```{r comparison_operators}
+x <- c(1, 2, 9, 12)
+x < 2
+x <= 2
+x > 9
+x >= 9
+x == 12
+x != 12
+```
+
+
+When you want to check for set containment, the `%in%` operator is the correct way to do this (as opposed to `==`).
+
+```{r in_operator}
+#| warning: true
+
+x <- c(1, 2, 9, 4)
+x == c(1, 2, 4)
+x %in% c(1, 2, 4)
+```
+
+
+The `Warning: longer object length is not a multiple of shorter object length` is a manifestation of **vector recycling**. 
+
+In R, if two vectors are being combined or compared, the shorter one will be repeated to match the length of the longer one--even if longer object length isn't a multiple of the shorter object length. We can see the exact recycling that happens below:
+
+```{r recycling}
+x <- c(1, 2, 9, 4)
+x == c(1, 2, 4)
+x == c(1, 2, 4, 1) # This line demonstrates the recycling that happens on the previous line
+```
+
+
+Logical vectors can also be created with functions. `is.na()` is one useful example:
+
+```{r is_na}
+x <- c(1, 4, 9, NA)
+x == NA
+is.na(x)
+```
+
+
+We can negate a logical object with `!`. We can combine logical objects with `&` (and) and  `|` (or).
+
+```{r negate_and_or}
+x <- c(1, 2, 4, 9)
+x > 1 & x < 5
+!(x > 1 & x < 5)
+x < 2 | x > 8
+```
+
+
+We can summarize logical vectors with:
+
+- `any()`: Are ANY of the values `TRUE`?
+- `all()`: Are ALL of the values `TRUE`?
+- `sum()`: How many of the values are `TRUE`?
+- `mean()`: What fraction of the values are `TRUE`?
+
+```{r summarize_logical}
+x <- c(1, 2, 4, 9)
+any(x == 1)
+all(x < 10)
+sum(x == 1)
+mean(x == 1)
+```
+
+`if_else()` and `case_when()` are functions that allow you to return values depending on the value of a logical vector. You'll explore the documentation for these in the following exercises.
+
+
+::: {.callout-tip appearance='simple' icon=false}
+Note: `ifelse()` (from base R) and `if_else()` (from tidyverse) are different functions. We prefer `if_else()` for many reasons (examples below).
+
+- Noisy to make sure you catch issues/bugs
+- Can explicitly handle missing values
+- Keeps dates as dates
+
+<details>
+<summary>Examples</summary>
+
+```{r}
+#| error: true
+x <- c(-1, -2, 4, 9, NA)
+
+ifelse(x > 0, 'positive', 'negative')
+if_else(x > 0, 'positive', 'negative')
+
+
+ifelse(x > 0, 1, 'negative') # Bad: doesn't complain with combo of data types
+if_else(x > 0, 1, 'negative') # Good:noisy to make sure you catch issues
+
+if_else(x > 0, 'positive', 'negative', missing = 'missing') # Good: can explicitly handle NA
+
+fun_dates <- mdy('1-1-2025') + 0:365
+ifelse(fun_dates < today(), fun_dates + years(), fun_dates) # Bad: converts dates to integers
+if_else(fun_dates < today(), fun_dates + years(), fun_dates) # Good: keeps dates as dates
+```
+
+</details>
+:::
+
+### Exercises 
+
+Load the diamonds dataset, and filter to the first 1000 diamonds.
+
+```{r diamonds_prep}
+data(diamonds)
+diamonds <- diamonds |> 
+    slice_head(n = 1000)
+```
+
+Using `tidyverse` functions, complete the following:
+
+1. Subset to diamonds that are less than 400 dollars or more than 10000 dollars.
+2. Subset to diamonds that are between 500 and 600 dollars (inclusive).
+3. How many diamonds are of either Fair, Premium, or Ideal cut (a total count)? What fraction of diamonds are of Fair, Premium, or Ideal cut?
+    - First, do this a wrong way with `==`. Predict the warning message that you will receive.
+    - Second, do this the correct way with an appropriate logical operator.
+4. Are there any diamonds of Fair cut that are more than \$3000? Are all diamonds of Ideal cut more than \$2000?
+5. Create two new categorized versions of `price` by looking up the documentation for `if_else()` and `case_when()`:
+    - `price_cat1`: "low" if price is less than 500 and "high" otherwise
+    - `price_cat2`: "low" if price is less than 500, "medium" if price is between 500 and 1000 dollars inclusive, and "high" otherwise.
+
+
+
+```{r}
+# 1
+diamonds |> 
+    filter(price < 400 | price > 10000)
+
+# 2
+diamonds |> 
+    filter(price >= 500, price <= 600)
+
+# 3
+## Wrong way with ==
+diamonds |> 
+    mutate(is_fpi = cut == c("Fair", "Premium", "Ideal")) |> 
+    summarize(num_fpi = sum(is_fpi), frac_fpi = mean(is_fpi))
+## Right way with %in%
+diamonds |> 
+    mutate(is_fpi = cut %in% c("Fair", "Premium", "Ideal")) |> 
+    summarize(num_fpi = sum(is_fpi), frac_fpi = mean(is_fpi))
+
+# 4
+diamonds |> 
+    filter(cut == "Fair") |> 
+    summarize(any_high = any(price > 3000))
+diamonds |> 
+    filter(cut == "Ideal") |> 
+    summarize(all_high = all(price > 2000))
+
+# 5
+diamonds |> 
+    mutate(
+        price_cat1 = if_else(price < 500, "low", "high"),
+        price_cat2 = case_when(
+            price < 500 ~ "low",
+            price >= 500 & price <= 1000 ~ "medium",
+            price > 1000 ~ "high"
+        )
+    )
+
+```
+
+
+## Numerics 
+
+### Notes 
+
+Numerical data can be of class `integer` or `numeric` (representing real numbers).
+
+```{r numerical_classes}
+x <- 1:3
+x
+class(x)
+
+x <- c(1+1e-9, 2, 3)
+x
+class(x)
+```
+
+
+The [Numbers](https://r4ds.hadley.nz/numbers) chapter in R4DS covers the following functions that are all useful for wrangling numeric data:
+
+- `n()`, `n_distinct()`: Counting and counting the number of unique values
+- `sum(is.na())`: Counting the number of missing values
+- `min()`, `max()`
+- `pmin()`, `pmax()`: Get the min and max across several vectors
+- Integer division: `%/%`. Remainder: `%%`
+    - `121 %/% 100 = 1` and `121 %% 100 = 21`
+- `round()`, `floor()`, `ceiling()`: Rounding functions (to a specified number of decimal places, to the largest integer below a number, to the smallest integer above a number)
+- `cut()`: Cut a numerical vector into categories
+- `cumsum()`, `cummean()`, `cummin()`, `cummax()`: Cumulative functions
+- `rank()`: Provide the ranks of the numbers in a vector
+- `lead(), lag()`: shift a vector by padding with NAs
+- Numerical summaries: `mean`, `median`, `min`, `max`, `quantile`, `sd`, `IQR`
+    - Note that all numerical summary functions have an `na.rm` argument that should be set to `TRUE` if you have missing data.
+
+
+
+
+
+### Exercises 
+
+Exercises will be on HW4. 
+
+The best way to add these functions and operators to your vocabulary is to need to recall them. Refer to the list of functions above as you try the exercises. 
+
+You will need to reference function documentation to look at arguments and look in the Examples section.
+
+## Dates  
+
+
+### Notes 
+
+The `lubridate` package contains useful functions for working with dates and times. The `lubridate` [function reference](https://lubridate.tidyverse.org/reference/index.html) is a useful resource for finding the functions you need. We'll take a brief tour of this reference page.
+
+
+We'll use the `lakers` dataset in the `lubridate` package to illustrate some examples.
+
+```{r load_lakers}
+lakers <- as_tibble(lakers)
+head(lakers)
+```
+
+
+Below we use date-time [parsing functions](https://lubridate.tidyverse.org/reference/index.html#date-time-parsing) to represent the `date` and `time` variables with date-time classes:
+
+```{r parse_date_time}
+lakers <- lakers |>
+    mutate(
+        date = ymd(date),
+        time = ms(time)
+    )
+```
+
+
+Below we use [extraction functions](https://lubridate.tidyverse.org/reference/index.html#setting-getting-and-rounding) to get components of the date-time objects:
+
+```{r lakers_extract}
+lakers_clean <- lakers |>
+    mutate(
+        year = year(date),
+        month = month(date),
+        day = day(date),
+        day_of_week = wday(date, label = TRUE),
+        minute = minute(time),
+        second = second(time)
+    )
+lakers_clean |> select(year:second)
+
+lakers_clean <- lakers_clean |>
+    group_by(date, opponent, period) |>
+    arrange(date, opponent, period, desc(time)) |>
+    mutate(
+        diff_btw_plays_sec = as.numeric(time - lag(time, 1))
+    )
+lakers_clean |> select(date, opponent, time, period, diff_btw_plays_sec)
+```
+
+### Exercises  
+
+Exercises will be on HW4. 
+
+
+## Factors 
+
+### Notes 
+
+**Creating factors**
+
+In R, factors are made up of two components: the **actual values** of the data and the possible **levels** within the factor. Creating a factor requires supplying both pieces of information.
+
+```{r months_char_vec}
+months <- c("Mar", "Dec", "Jan",  "Apr", "Jul")
+```
+
+
+However, if we were to sort this vector, R would sort this vector alphabetically.
+
+```{r sort_months_abs}
+# alphabetical sort
+sort(months)
+```
+
+
+We can fix this sorting by creating a factor version of `months`. The `levels` argument is a character vector that specifies the unique values that the factor can take. The order of the values in `levels` defines the sorting of the factor.
+
+```{r create_months_fct}
+months_fct <- factor(months, levels = month.abb) # month.abb is a built-in variable
+months_fct
+sort(months_fct)
+```
+
+
+What if we try to create a factor with values that aren't in the levels? (e.g., a typo in a month name)
+
+```{r months_typo}
+months2 <- c("Jna", "Mar")
+factor(months2, levels = month.abb)
+```
+
+
+Because the `NA` is introduced silently (without any error or warnings), this can be dangerous. It might be better to use the `fct()` function in the `forcats` package instead:
+
+```{r fct_forcats}
+#| error: true
+
+fct(months2, levels = month.abb)
+```
+
+
+
+**Reordering factors**
+
+
+We'll use a subset of the General Social Survey (GSS) dataset available in the `forcats` pacakges.
+
+```{r load_gss}
+data(gss_cat)
+head(gss_cat)
+```
+
+
+Reordering the levels of a factor can be useful in plotting when categories would benefit from being sorted in a particular way:
+
+```{r reorder_factors_motivation}
+relig_summary <- gss_cat |>
+    group_by(relig) |>
+    summarize(
+        tvhours = mean(tvhours, na.rm = TRUE),
+        n = n()
+    )
+
+ggplot(relig_summary, aes(x = tvhours, y = relig)) + 
+    geom_point() +
+    theme_classic()
+```
+
+
+We can use `fct_reorder()` in `forcats`.
+
+- The first argument is the factor that you want to reorder the levels of
+- The second argument determines how the factor is sorted (analogous to what you put inside `arrange()` when sorting the rows of a data frame.)
+
+```{r fct_reorder}
+ggplot(relig_summary, aes(x = tvhours, y = fct_reorder(relig, tvhours))) +
+    geom_point() +
+    theme_classic()
+```
+
+
+For bar plots, we can use `fct_infreq()` to reorder levels from most to least common. This can be combined with `fct_rev()` to reverse the order (least to most common):
+
+```{r fct_infreq_rev}
+gss_cat |>
+    ggplot(aes(x = marital)) +
+    geom_bar() +
+    theme_classic()
+
+gss_cat |>
+    mutate(marital = marital |> fct_infreq() |> fct_rev()) |>
+    ggplot(aes(x = marital)) +
+    geom_bar() +
+    theme_classic()
+```
+
+
+**Modifying factor levels**
+
+We talked about reordering the levels of a factor--what about changing the values of the levels themselves?
+
+For example, the names of the political parties in the GSS could use elaboration ("str" isn't a great label for "strong") and clean up:
+
+```{r gss_messy_party}
+gss_cat |> count(partyid)
+```
+
+
+We can use `fct_recode()` on `partyid` with the new level names going on the left and the old levels on the right. Any levels that aren't mentioned explicitly (i.e., "Don't know" and "Other party") will be left as is:
+
+```{r fct_recode}
+gss_cat |>
+    mutate(
+        partyid = fct_recode(partyid,
+            "Republican, strong"    = "Strong republican",
+            "Republican, weak"      = "Not str republican",
+            "Independent, near rep" = "Ind,near rep",
+            "Independent, near dem" = "Ind,near dem",
+            "Democrat, weak"        = "Not str democrat",
+            "Democrat, strong"      = "Strong democrat"
+        )
+    ) |>
+    count(partyid)
+```
+
+
+To combine groups, we can assign multiple old levels to the same new level ("Other" maps to "No answer", "Don't know", and "Other party"):
+
+```{r fct_recode2}
+gss_cat |>
+    mutate(
+        partyid = fct_recode(partyid,
+            "Republican, strong"    = "Strong republican",
+            "Republican, weak"      = "Not str republican",
+            "Independent, near rep" = "Ind,near rep",
+            "Independent, near dem" = "Ind,near dem",
+            "Democrat, weak"        = "Not str democrat",
+            "Democrat, strong"      = "Strong democrat",
+            "Other"                 = "No answer",
+            "Other"                 = "Don't know",
+            "Other"                 = "Other party"
+        )
+    )
+```
+
+
+We can use `fct_collapse()` to collapse many levels:
+
+```{r fct_collapse}
+gss_cat |>
+    mutate(
+        partyid = fct_collapse(partyid,
+            "Other" = c("No answer", "Don't know", "Other party"),
+            "Republican" = c("Strong republican", "Not str republican"),
+            "Independent" = c("Ind,near rep", "Independent", "Ind,near dem"),
+            "Democrat" = c("Not str democrat", "Strong democrat")
+        )
+    ) |>
+    count(partyid)
+```
+
+
+
+### Exercises 
+
+
+1. Create a factor version of the following data with the levels in a sensible order.
+
+```{r}
+ratings <- c("High", "Medium", "Low")
+```
+
+More exercises will be on HW4. 
+
+## Done!
+
+- Check the ICA Instructions for how to (a) push your code to GitHub and (b) update your portfolio website
+
+```{r}
+paste0("Letter of the Day: ",letters)
+str_c("Letter of the Day:",letters, collapse = '')
+str_c("Letter of the Day: ",letters, sep = '')
+str_c("Letter of the Day: ",letters, collapse = '')
+str_flatten(letters,', ')
+```
+
+

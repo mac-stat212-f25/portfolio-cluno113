@@ -2,4 +2,86 @@
 title: "Professional Viz Sample"
 ---
 
-Add content here
+```{r nyt_key}
+library(readr)
+library(tidyverse)
+library(httr2)
+library(xml2)
+times_key <- read_lines("pv.txt")
+```
+
+```{r create_nyt_url}
+create_nyt_url <- function(section = "viewed", period = 1, key) {
+  request("https://api.nytimes.com") |>
+    req_url_path_append("svc", "mostpopular", "v2", paste0(section, "/", period, ".json")) |>
+    req_url_query(`api-key` = key)
+}
+```
+
+```{r use_create_nyt_url}
+req_most_viewed <- create_nyt_url("viewed", 1, times_key)
+resp <- req_perform(req_most_viewed)
+data <- resp_body_json(resp)
+
+titles <- sapply(data$results, function(x) x$title)
+
+section <- sapply(data$results, function(x) x$section)
+section <- as.data.frame(section)
+```
+
+```{r}
+# install.packages(c("tm", "SnowballC", "wordcloud", "RColorBrewer"))
+library("tm")
+library("SnowballC")
+library("wordcloud")
+library("RColorBrewer")
+```
+
+```{r}
+titles <- str_replace_all(titles, "[[:punct:]]", "")
+titles <- as.data.frame(titles)
+
+
+docs <- Corpus(VectorSource(titles))
+
+docs <- tm_map(docs, content_transformer(tolower)) # Convert to lowercase
+docs <- tm_map(docs, removeNumbers) # Remove numbers
+docs <- tm_map(docs, removeWords, stopwords("english")) # Remove common English stop words
+docs <- tm_map(docs, removePunctuation) # Remove punctuation
+docs <- tm_map(docs, stripWhitespace) # Remove extra whitespace
+```
+
+```{r}
+dtm <- TermDocumentMatrix(docs)
+m <- as.matrix(dtm)
+v <- sort(rowSums(m), decreasing = TRUE)
+d <- data.frame(word = names(v), freq = v)
+```
+
+```{r}
+if(require(RColorBrewer)){
+
+		pal <- brewer.pal(9,"BuGn")
+		pal <- pal[-(1:4)]
+		wordcloud(d$word,d$freq,c(8,.3),2,,FALSE,,.15,pal)
+
+
+		pal <- brewer.pal(6,"Dark2")
+		pal <- pal[-(1)]
+		wordcloud(d$word,d$freq,c(8,.3),2,,TRUE,,.15,pal)
+		
+		#random colors
+		wordcloud(d$word,d$freq,c(8,.3),2,,TRUE,TRUE,.15,pal)
+	}
+
+wordcloud(d)
+```
+```{r}
+	pal <- brewer.pal(9,"BuGn")
+	pal <- pal[-(1:4)]
+	wordcloud(d$word,d$freq,c(8,.3),2,,FALSE,,.15,pal)
+	title("Most Popular NYT Titles", line = 2)
+```
+
+
+

@@ -1,0 +1,39 @@
+---
+title: "Milestone 1: Proposal + Dataset"
+format: html
+---
+
+Each team should submit a proposal for their project in the form of a rendered HTML Quarto page added as an appendix to their project website. The proposal should include the followings
+
+## A Title  
+MTA Ridership
+
+## The Names of the Team Members  
+Claire Kuno and Gabriella Nieves
+
+## A Short Description of the Project 
+We will be analyzing New York City demographics and geography through MTA ridership data such as neighborhood accessibility. 
+
+## 2-3 Broad Research Questions the Team is Interested in Exploring  
+
+* What train lines are most popular?  
+* How has ridership changed across time?
+* Which neighborhoods are lacking access to the subway?  
+
+
+## The Reasons/Inspirations Behind Choosing This Project 
+
+The inspiration behind this project comes from our shared experience of growing up in New York City. As active participants in the New York City subway, we are looking to better understand ridership and access across the metropolitan area. Th visualize our findings to share how infrastructure and movement impact life in New York City.
+
+## One Data Set that can be used to Answer the Research Question
+
+[New York Gov Data] (https://data.ny.gov) 
+
+## A Rough Implementation and Responsibility Plan
+ie, what tasks needs to be accomplished and who will do each when. Think about the list of deliverables when building your list of tasks. The plan should be added as GitHub Issues within the project repository–see the callout box below for details.
+
+* Download data
+* Data cleaning and wrangling
+* Arrange plots
+* Write about findings, methodology description, and plot explanations
+
