@@ -69,3 +69,8 @@ _freeze/
 *.log
 *.aux
 *.toc
+/proj/data
+*.xlsx
+*.geojson
+/proj/nyct2020_25d
+*.csv
